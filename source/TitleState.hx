@@ -62,7 +62,18 @@ class TitleState extends MusicBeatState
 	var titleTextColors:Array<FlxColor> = [0xFF33FFFF, 0xFF3333CC];
 	var titleTextAlphas:Array<Float> = [1, .64];
 
+	var blackScreen:FlxSprite;
+	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 1, 0xFF0F5FFF);
+	var credGroup:FlxGroup;
+	var credTextShit:Alphabet;
+	var textGroup:FlxGroup;
+	var logoSpr:FlxSprite;
+
 	var curWacky:Array<String> = [];
+
+	var Timer:Float = 0;
+
+	var fun:Int;
 
 	var wackyImage:FlxSprite;
 
@@ -173,15 +184,25 @@ class TitleState extends MusicBeatState
 	var gfDance:FlxSprite;
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
+	var arrowshit:FlxSprite;
 	var swagShader:ColorSwap = null;
 
 	function startIntro()
 	{
 		if (!initialized)
 		{
+			FlxG.camera.zoom = 1.5;
+			FlxG.camera.angle = 30;
+
+			FlxTween.tween(FlxG.camera, {zoom:1}, 0.95, {ease: FlxEase.quadOut});
+			FlxTween.tween(FlxG.camera, {angle:0}, 0.95, {ease: FlxEase.quadOut});
+
 			if(FlxG.sound.music == null) {
 				FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic), 0);
+				FlxG.sound.music.fadeIn(1, 0, 0.8);
 			}
+
+			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
 		switch(ClientPrefs.daMenuMusic) // change this if you're making a source mod, like add your own or something
@@ -203,7 +224,11 @@ class TitleState extends MusicBeatState
 		}
 		persistentUpdate = true;
 
-		var bg:FlxSprite = new FlxSprite();
+		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		// bg.antialiasing = ClientPrefs.globalAntialiasing;
+		// bg.setGraphicSize(Std.int(bg.width * 0.6));
+		// bg.updateHitbox();
+		add(bg);
 
 		if (titleJSON.backgroundSprite != null && titleJSON.backgroundSprite.length > 0 && titleJSON.backgroundSprite != "none"){
 			bg.loadGraphic(Paths.image(titleJSON.backgroundSprite));
@@ -286,13 +311,19 @@ class TitleState extends MusicBeatState
 
 		credTextShit.visible = false;
 
-		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Paths.image('newgrounds_logo'));
+		ngSpr = new FlxSprite(0, FlxG.height * 0.4).loadGraphic(Paths.image('newgrounds_logo'));
 		add(ngSpr);
 		ngSpr.visible = false;
-		ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
+		ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.55));
 		ngSpr.updateHitbox();
 		ngSpr.screenCenter(X);
 		ngSpr.antialiasing = ClientPrefs.globalAntialiasing;
+
+		arrowshit = new FlxSprite(-80).loadGraphic(Paths.image('stupidarrows'));
+		arrowshit.setGraphicSize(Std.int(arrowshit.width * 1));
+		arrowshit.updateHitbox();
+		arrowshit.screenCenter();
+		arrowshit.antialiasing = ClientPrefs.globalAntialiasing;
 
 		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
 
@@ -330,6 +361,17 @@ class TitleState extends MusicBeatState
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
+		Timer += 1;
+		gradientBar.scale.y += Math.sin(Timer / 10) * 0.001;
+		gradientBar.updateHitbox();
+		gradientBar.y = FlxG.height - gradientBar.height;
+		// gradientBar = FlxGradient.createGradientFlxSprite(Math.round(FlxG.width), Math.round(gradientBar.height), [0x00ff0000, 0xaaAE59E4, 0xff19ECFF], 1, 90, true);
+
+		if (FlxG.keys.justPressed.F)
+		{
+			FlxG.fullscreen = !FlxG.fullscreen;
+		}
+
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT;
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
@@ -342,6 +384,21 @@ class TitleState extends MusicBeatState
 			#if switch
 			if (gamepad.justPressed.B)
 				pressedEnter = true;
+			#end
+		}
+
+		var pressLeftNright:Bool = FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT #if android || _virtualpad.buttonC.justPressed #end;
+
+		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+
+		if (gamepad != null)
+		{
+			if (gamepad.justPressed.Y)
+				pressLeftNright = true;
+	
+			#if switch
+			if (gamepad.justPressed.Y)
+				pressLeftNright = true;
 			#end
 		}
 		
@@ -381,18 +438,51 @@ class TitleState extends MusicBeatState
 				new FlxTimer().start(1, function(tmr:FlxTimer)
 				{
 					if (mustUpdate) {
-						FlxG.switchState(OutdatedState.new);
+						FlxG.switchState(WarningState.new);
 					} else {
-						FlxG.switchState(MainMenuState.new);
+						FlxG.switchState(WarningState.new);
 					}
 					closedState = true;
 				});
+			}
+
+			if(pressLeftNright)
+			{
+				FlxG.camera.flash(ClientPrefs.flashing ? FlxColor.WHITE : 0x4CFFFFFF, 1);
+				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+	
+				FlxTween.tween(FlxG.camera, {y: FlxG.height}, 1.2, {ease: FlxEase.expoIn, startDelay: 0.4});
+	
+				transitioning = true;
+				// FlxG.sound.music.stop();
+	
+				MainMenuState.firstStart = true;
+				MainMenuState.finishedFunnyMove = false;
+		
+				MainMenuState.firstStart = true;
+
+				new FlxTimer().start(1, function(tmr:FlxTimer)
+				{
+					if (mustUpdate) {
+						FlxG.switchState(PurTitleState.new);
+					} else {
+						FlxG.switchState(PurTitleState.new);
+					}
+					closedState = true;
+					MainMenuState.sexo3 = false;
+				});
+
+				FlxG.sound.music.stop();
 			}
 		}
 
 		if (initialized && pressedEnter && !skippedIntro)
 		{
 			skipIntro();
+		}
+		if (pressLeftNright && !skippedIntro)
+		{
+			skipIntro2();
 		}
 
 		if(swagShader != null)
@@ -468,47 +558,71 @@ class TitleState extends MusicBeatState
 					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic), 0);
 					FlxG.sound.music.fadeIn(4, 0, 0.7);
 				case 2:
-					#if PSYCH_WATERMARKS
-					createCoolText(['Psych Engine by'], 15);
-					#else
-					createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-					#end
+					createCoolText([' '], 45);
+				// credTextShit.visible = true;
+				case 3:
+					addMoreText('Psych Engine by\nShadow Mario\nRiverOaken\nbb-panzu', 45);
+				// credTextShit.text += '\npresent...';
+				// credTextShit.addText();
 				case 4:
-					#if PSYCH_WATERMARKS
-					addMoreText('Shadow Mario', 15);
-					addMoreText('RiverOaken', 15);
-					addMoreText('Jordan Santiago', 15);
-					#else
-					addMoreText('present');
-					#end
+					deleteCoolText();
+				// credTextShit.visible = false;
+				// credTextShit.text = 'In association \nwith';
+				/ credTextShit.screenCenter();
 				case 5:
+					createCoolText(['A fan tweak and mod of\nThis mod down below'], -60);
+					logoSpr.visible = true;
+				case 7:
 					deleteCoolText();
-				case 6:
-					#if PSYCH_WATERMARKS
-					createCoolText(['Not associated', 'with'], -40);
-					#else
-					createCoolText(['In association', 'with'], -40);
-					#end
+					logoSpr.visible = false;
+				// credTextShit.visible = false;
+					// credTextShit.text = 'Shoutouts Tom Fulp';
+				// credTextShit.screenCenter();
+				//createCoolText(['MoldyGH', 'Rapparep', 'Krisspo', 'TheBuilderXD']);
+				// credTextShit.visible = true;
 				case 8:
-					addMoreText('newgrounds', -40);
-					ngSpr.visible = true;
+					createCoolText(['VS Dave & Bambi by'], -60);
 				case 9:
-					deleteCoolText();
-					ngSpr.visible = false;
+					addMoreText('MoldyGH, MissingTextureMan101', -60);
 				case 10:
-					createCoolText([curWacky[0]]);
+					addMoreText('rapparep lol, TheBuilderXD', -60);
+				case 11:
+					addMoreText('T5mpler, Erizur, Billy Bobbo', -60);
 				case 12:
-					addMoreText(curWacky[1]);
+					addMoreText('Cuszie, Marcello_TIMEnice30', -60);
 				case 13:
 					deleteCoolText();
 				case 14:
-					addMoreText('Friday');
+					createCoolText(['VS D&B Definitive Edition', "And Bambi's Purgatory", 'by']);
 				case 15:
-					addMoreText('Night');
+					addMoreText('WhatsDown, ztgds, MijaeLio, Voidsslime\nEpicRandomness11, Pyramix, Shredboi, Aadsta,\nReginald Reborn, BombasticHype, BezieAnims');
 				case 16:
-					addMoreText('Funkin');
-
+					deleteCoolText();
 				case 17:
+					createCoolText(['And Special thanks to our contributors']);
+				case 18:
+					addMoreText('NewReal, Cynda, Grantare, Lancey, rapparep lol\nBilly Bobbo, TheBuilder, and More!');
+				case 19:
+					deleteCoolText();
+				case 20:
+					addMoreText('Supernovae by ArchWk');
+				case 21:
+					addMoreText('Glitch by DeadShadow PixelGH');
+				case 22:
+					deleteCoolText();
+				case 23:
+					createCoolText([curWacky[0]]);
+				case 24:
+					addMoreText(curWacky[1]);
+				case 25:
+					deleteCoolText();
+				case 26:
+					addMoreText('VS Dave');
+				case 27:
+					addMoreText('& Bambi');
+				case 28:
+					addMoreText('Definitive Edition\n+ Bambis Purgatory'); 
+				case 29:
 					skipIntro();
 			}
 		}
@@ -516,6 +630,46 @@ class TitleState extends MusicBeatState
 
 	var skippedIntro:Bool = false;
 	var increaseVolume:Bool = false;
+
+	function skipIntro2():Void
+	{
+	    if (!skippedIntro)
+		{
+			doTheFunny = true;
+
+			gradientBar = FlxGradient.createGradientFlxSprite(Math.round(FlxG.width), 512, [0x00, 0x553D0468, 0xAA0F5FFF], 1, 90, true);
+	    	gradientBar.y = FlxG.height - gradientBar.height;
+	     	gradientBar.scale.y = 0;
+	    	gradientBar.updateHitbox();
+	    	add(gradientBar);
+	     	FlxTween.tween(gradientBar, {'scale.y': 1.3}, 4, {ease: FlxEase.quadInOut});
+
+			add(arrowshit);
+
+			titleText = new FlxSprite(100, FlxG.height * 0.8);
+			titleText.frames = Paths.getSparrowAtlas('titleEnter');
+			titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
+			if(ClientPrefs.flashing) { titleText.animation.addByPrefix('press', "ENTER PRESSED", 24); }
+			titleText.antialiasing = ClientPrefs.globalAntialiasing;
+			titleText.animation.play('idle');
+			titleText.updateHitbox();
+		    // titleText.screenCenter(X);
+			add(titleText);
+
+			FlxTween.tween(logoBl,{x: 15}, 1.4, {ease: FlxEase.expoInOut});
+
+			logoBl.angle = -7;
+			if(logoBl.angle == -7) 
+			FlxTween.angle(logoBl, logoBl.angle, 7, 7, {ease: FlxEase.quartInOut});
+			if (logoBl.angle == 7) 
+			FlxTween.angle(logoBl, logoBl.angle, -7, 7, {ease: FlxEase.quartInOut});
+
+			if(ClientPrefs.flashing) {FlxG.camera.flash(FlxColor.WHITE, 4); }
+			remove(credGroup);
+			skippedIntro = true;
+		}
+	}
+	
 	function skipIntro():Void
 	{
 		if (!skippedIntro)
