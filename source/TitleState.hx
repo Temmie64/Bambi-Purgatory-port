@@ -568,7 +568,7 @@ class TitleState extends MusicBeatState
 					deleteCoolText();
 				// credTextShit.visible = false;
 				// credTextShit.text = 'In association \nwith';
-				/ credTextShit.screenCenter();
+				// credTextShit.screenCenter();
 				case 5:
 					createCoolText(['A fan tweak and mod of\nThis mod down below'], -60);
 					logoSpr.visible = true;
