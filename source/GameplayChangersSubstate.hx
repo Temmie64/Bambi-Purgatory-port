@@ -22,7 +22,7 @@ import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
 import flixel.FlxState;
-import purgatory.PurFreeplayState;
+//import purgatory.PurFreeplayState;
 
 using StringTools;
 
@@ -282,7 +282,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			ClientPrefs.saveSettings();
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FreeplayState.fart = true;
-			PurFreeplayState.fart = true;
+			//PurFreeplayState.fart = true;
 		}
 
 		if(nextAccept <= 0)

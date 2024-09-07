@@ -10,7 +10,7 @@ import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import purgatory.NewStoryPurgatory;
-import purgatory.PurFreeplayState;
+//import purgatory.PurFreeplayState;
 import Character.Boyfriend;
 
 using StringTools;
@@ -115,7 +115,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			} else if (PlayState.isFreeplay) {
 				FlxG.switchState(new FreeplayState());
 			} else if (PlayState.isFreeplayPur) {
-				FlxG.switchState(new PurFreeplayState());
+				//FlxG.switchState(new PurFreeplayState());
 			}
 
 			if (PlayState.isFreeplayPur || PlayState.isPurStoryMode) {

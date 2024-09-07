@@ -16,7 +16,7 @@ import flixel.FlxCamera;
 import flixel.util.FlxStringUtil;
 import options.OptionsState;
 import purgatory.NewStoryPurgatory;
-import purgatory.PurFreeplayState;
+//import purgatory.PurFreeplayState;
 import purgatory.PurMainMenuState;
 import purgatory.PurWeekData;
 import GameplayChangersSubstate;
@@ -364,7 +364,7 @@ class PauseSubState extends MusicBeatSubstate
 					if(PlayState.isPurStoryMode) {
 						FlxG.switchState(NewStoryPurgatory.new);
 					} else if (!PlayState.isPurStoryMode) {
-						FlxG.switchState(PurFreeplayState.new);
+						//FlxG.switchState(PurFreeplayState.new);
 					}
 					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
 					PlayState.changedDifficulty = false;

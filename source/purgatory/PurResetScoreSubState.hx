@@ -4,7 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.util.FlxColor;
-import purgatory.PurFreeplayState;
+//import purgatory.PurFreeplayState;
 import FreeplayState;
 
 using StringTools;
