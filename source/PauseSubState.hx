@@ -17,6 +17,7 @@ import flixel.util.FlxStringUtil;
 import options.OptionsState;
 import purgatory.NewStoryPurgatory;
 import purgatory.PurFreeplayState;
+import purgatory.PurMainMenuState;
 import purgatory.PurWeekData;
 import GameplayChangersSubstate;
 
@@ -29,6 +30,8 @@ class PauseSubState extends MusicBeatSubstate
 	var menuItemsExit:Array<String> = [(PlayState.isStoryMode ? 'Exit to Story Menu' : 'Exit to Freeplay'), 'Exit to Main Menu', 'Exit Game', 'Back'];
 	var difficultyChoices = [];
 	var curSelected:Int = 0;
+
+	public static var isPlayState:Bool = false;
 
 	var pauseMusic:FlxSound;
 	var practiceText:FlxText;

@@ -25,6 +25,7 @@ class MainMenuState extends MusicBeatState
 {
 	public static var psychEngineJSVersion:String = '1.33.0'; //This is also used for Discord RPC
 	public static var psychEngineVersion:String = '0.6.3'; //This is also used for Discord RPC
+	public static var curModVer:String = '2.0 Prototype'; //This is also used for yo maama aaa
 	public static var curSelected:Int = 0;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
@@ -93,6 +94,8 @@ class MainMenuState extends MusicBeatState
 		transOut = FlxTransitionableState.defaultTransOut;
 
 		persistentUpdate = persistentDraw = true;
+
+		daRealEngineVer = engineVers[FlxG.random.int(0, 2)];
 
 		var yScroll:Float = Math.max(0.1 - (0.03 * (optionShit.length - 4)), 0.1);
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(randomizeBG());
@@ -171,7 +174,7 @@ class MainMenuState extends MusicBeatState
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("Comic Sans MS Bold", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
-		var versionShit:FlxText = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' v" + Application.current.meta.get('version'), 12);
+		var versionShit:FlxText = new FlxText(12, FlxG.height - 24, 0, curModVer + ' ' + daRealEngineVer + " Engine, Vs Dave And Bambi 3.0b", 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("Comic Sans MS Bold", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);

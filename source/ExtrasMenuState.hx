@@ -15,6 +15,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
+import flixel.input.keyboard.FlxKey;
 import Achievements;
 import editors.MasterEditorMenu;
 import purgatory.PurMainMenuState;
@@ -23,7 +24,8 @@ using StringTools;
 
 class ExtrasMenuState extends MusicBeatState
 {
-	public static var psychEngineVersion:String = '0.6.2'; //This is also used for Discord RPC
+	public static var psychEngineJSVersion:String = '1.33.0'; //This is also used for Discord RPC
+	public static var psychEngineVersion:String = '0.6.3'; //This is also used for Discord RPC
 	public static var curSelected:Int = 0;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;

@@ -70,6 +70,12 @@ class FreeplayState extends MusicBeatState
 
 	var player:MusicPlayer;
 
+	private var grpSongs:FlxTypedGroup<Alphabet>;
+	private var curPlaying:Bool = false;
+	private var curChar:String = "unknown";
+
+	public static var fart:Bool = false;
+
 	override function create()
 	{
 		Paths.clearStoredMemory();
@@ -375,6 +381,8 @@ class FreeplayState extends MusicBeatState
 	var holdTime:Float = 0;
 	override function update(elapsed:Float)
 	{
+		if(fart) allowinputShit = true;
+
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 
@@ -498,6 +506,8 @@ class FreeplayState extends MusicBeatState
 			{
 				persistentUpdate = false;
 				openSubState(new GameplayChangersSubstate());
+				allowinputShit = false;
+				fart = false;
 			}
 			else if(space)
 			{
@@ -702,6 +712,8 @@ class FreeplayState extends MusicBeatState
 				persistentUpdate = false;
 				openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));
 				FlxG.sound.play(Paths.sound('scrollMenu'));
+				allowinputShit = false;
+				fart = false;
 			}
 		}
 		super.update(elapsed);

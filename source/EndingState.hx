@@ -3,6 +3,8 @@ package;
 import flixel.*;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import purgatory.PurWeekData;
+import Character.Boyfriend;
 
 /**
  * omg aer you bbpanzu???????????????????????????????????
@@ -12,7 +14,7 @@ class EndingState extends MusicBeatState
 
 	var _ending:String;
 	var _song:String;
-	public var stupidThing:Boyfriend;
+	public var stupidThing:Character.Boyfriend;
 	
 	public function new(ending:String,song:String) 
 	{

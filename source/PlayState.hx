@@ -151,18 +151,41 @@ class PlayState extends MusicBeatState
 
 	public var vocals:FlxSound;
 	public var opponentVocals:FlxSound;
+
 	var intro3:FlxSound;
 	var intro2:FlxSound;
 	var intro1:FlxSound;
 	var introGo:FlxSound;
+
 	public var dad:Character = null;
+	public var dad2:Character = null;
+	public var dad3:Character = null;
 	public var gf:Character = null;
 	public var boyfriend:Boyfriend = null;
+	public var boyfriend2:Character = null;
+
+	public var dave:Character = null;
+	public var bambi:Character = null;
+	public var badai:Character = null;
+	public var bandu:Character = null;
+	public var bamburg:Character = null;
+	private var swaggy:Character = null;
+	private var swagBombu:Character = null;
+
 	public var bfNoteskin:String = null;
 	public var dadNoteskin:String = null;
+
 	public static var death:FlxSprite;
 	public static var deathanim:Bool = false;
 	public static var dead:Bool = false;
+
+	private var altSong:SwagSong;
+
+	public var subtitleManager:SubtitleManager;
+
+	public var stupidx:Float = 0;
+	public var stupidy:Float = 0; // stupid velocities for cutscene
+	public var updatevels:Bool = false;
 
 	public static var iconOffset:Int = 26;
 
@@ -1030,7 +1053,7 @@ class PlayState extends MusicBeatState
 			add(laneunderlay);
 		}
 
-		var showTime:Bool = (ClientPrefs.timeBarType != 'Disabled');
+		var showTime:Bool = (!ClientPrefs.hideTime && ClientPrefs.timeBarType != 'Disabled');
 
 		timeTxt = new FlxText(STRUM_X + (FlxG.width / 2) - 248, 19, 400, "", 32);
 		timeTxt.scrollFactor.set();
@@ -2244,6 +2267,80 @@ class PlayState extends MusicBeatState
 		startDialogue(dialogueJson);
 	}
 
+	function hideshit() // basically a camHUD.visible = false; except it doesnt fuck up dialogue (and i didnt want to do another camera for the dialogue)
+	{
+		if(!ClientPrefs.hideHud) {
+			songWatermark.visible = false;
+			healthBar.visible = false;
+			healthBarBG.visible = false;
+			iconP1.visible = false;
+			iconP2.visible = false;
+			scoreTxt.visible = false;
+		} 
+		judgementCounter.visible = false;
+		strumLineNotes.visible = false;
+		grpNoteSplashes.visible = false;
+		notes.visible = false;
+		if(!ClientPrefs.hideTime) {
+			timeBar.visible = false;
+			timeBarBG.visible = false;
+			timeTxt.visible = false;
+		}
+	}
+		
+	function showshit()
+	{
+		if(!ClientPrefs.hideHud) {
+			songWatermark.visible = true;
+			healthBar.visible = true;
+			healthBarBG.visible = true;
+			iconP1.visible = true;
+			iconP2.visible = true;
+			scoreTxt.visible = true;
+		} 
+		judgementCounter.visible = true;
+		strumLineNotes.visible = true;
+		grpNoteSplashes.visible = true;
+		notes.visible = true;
+		if(!ClientPrefs.hideTime) {
+			timeBar.visible = true;
+			timeBarBG.visible = true;
+			timeTxt.visible = true; 
+		} 
+	}
+	
+	function showonlystrums() // does the thing that it says
+	{
+		songWatermark.visible = true;
+		judgementCounter.visible = true;
+		if(!ClientPrefs.hideHud) {
+			healthBar.visible = false;
+			healthBarBG.visible = false;
+			iconP1.visible = false;
+			iconP2.visible = false;
+			scoreTxt.visible = false;
+		}
+		strumLineNotes.visible = true;
+		grpNoteSplashes.visible = true;
+		notes.visible = true;
+		if(!ClientPrefs.hideTime) {
+			timeBar.visible = false;
+			timeBarBG.visible = false;
+			timeTxt.visible = false;
+	   }
+	}
+		
+		function hideHUDFade() // DONT USE THIS AT STEP 0!!!
+		{
+			FlxTween.tween(camHUD, {alpha:0}, 1);
+		}
+			
+		function showHUDFade()
+		{
+			FlxTween.tween(camHUD, {alpha:1}, 1);
+		}
+	
+
 	public function startVideoDIALOGUE(name:String):Void
 	{
 		#if VIDEOS_ALLOWED
@@ -2690,14 +2787,12 @@ class PlayState extends MusicBeatState
 						if(isNormalStart) {
 						   	FlxTween.tween(healthBar, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
 						   	FlxTween.tween(healthBarBG, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
-							FlxTween.tween(healthBarOverlay, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
 						   	FlxTween.tween(iconP1, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
 						   	FlxTween.tween(iconP2, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
 
 						   	FlxTween.tween(scoreTxt, {alpha:1}, 0.35);
 						   	FlxTween.tween(judgementCounter, {alpha:1}, 0.35);
 					    	FlxTween.tween(songWatermark, {alpha:1}, 0.35);
-						   	FlxTween.tween(creditsWatermark, {alpha:1}, 0.35);
 						}
 						if (ClientPrefs.tauntOnGo && ClientPrefs.charsAndBG)
 						{
@@ -2843,7 +2938,6 @@ class PlayState extends MusicBeatState
 					if(isNormalStart) {
 					FlxTween.tween(healthBar, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
 					FlxTween.tween(healthBarBG, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
-					FlxTween.tween(healthBarOverlay, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
 					FlxTween.tween(iconP1, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
 					FlxTween.tween(iconP2, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
 					/*	FlxTween.tween(healthBarBG, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
@@ -2854,7 +2948,6 @@ class PlayState extends MusicBeatState
 					FlxTween.tween(scoreTxt, {alpha:1}, 0.35);
 					FlxTween.tween(judgementCounter, {alpha:1}, 0.35);
 					FlxTween.tween(songWatermark, {alpha:1}, 0.35);
-					FlxTween.tween(creditsWatermark, {alpha:1}, 0.35);
 				}
 	
 				notes.forEachAlive(function(note:Note) {
@@ -5342,6 +5435,34 @@ class PlayState extends MusicBeatState
 	public var transitioning = false;
 	public function endSong():Void
 	{
+		//Should kill you if you tried to cheat
+		if(!startingSong) {
+			notes.forEach(function(daNote:Note) {
+				if(daNote.strumTime < songLength - Conductor.safeZoneOffset) {
+					health -= 0.05 * healthLoss;
+				}
+			});
+			for (daNote in unspawnNotes) {
+				if(daNote.strumTime < songLength - Conductor.safeZoneOffset) {
+					health -= 0.05 * healthLoss;
+				}
+			}
+
+			if(doDeathCheck()) {
+				return;
+			}
+		}
+		PauseSubState.isPlayState = false;
+
+		#if windows
+		if (window != null)
+		{
+			window.close();
+			expungedWindowMode = false;
+			window = null;
+		}
+		#end
+		
 		timeBarBG.visible = false;
 		timeBar.visible = false;
 		timeTxt.visible = false;

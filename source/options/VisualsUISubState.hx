@@ -147,6 +147,13 @@ class VisualsUISubState extends BaseOptionsMenu
 			false);
 		addOption(option);
 
+		var option:Option = new Option('Hide Time Bar',
+			"If Checked, Hides the Time Bar",
+			'hideTime',
+			'bool',
+			true);
+		addOption(option);
+
 		var option:Option = new Option("Taunt on 'GO'",
 			"If checked, the characters will taunt on GO when you play.",
 			'tauntOnGo',
