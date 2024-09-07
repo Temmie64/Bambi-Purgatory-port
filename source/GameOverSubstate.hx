@@ -9,6 +9,8 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import purgatory.NewStoryPurgatory;
+import purgatory.PurFreeplayState;
 import Character.Boyfriend;
 
 using StringTools;

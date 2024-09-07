@@ -303,14 +303,6 @@ class PauseSubState extends MusicBeatSubstate
 							PlayState.window.close();
 						}
 					}
-
-					if (PlayState.SONG.song.toLowerCase() == "deploration" || PlayState.SONG.song.toLowerCase() == "dishonored")
-					{
-						if (PlayState.window != null)
-						{
-							PlayState.window.close();
-						}
-					}
 				case 'Toggle Botplay':
 					PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
 					PlayState.changedDifficulty = true;

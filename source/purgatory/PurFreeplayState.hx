@@ -15,9 +15,6 @@ import flixel.system.FlxSound;
 import flixel.util.FlxStringUtil;
 import openfl.utils.Assets as OpenFlAssets;
 import lime.utils.Assets;
-#if desktop
-import Discord.DiscordClient;
-#end
 using StringTools;
 import WeekData;
 import purgatory.PurWeekData;

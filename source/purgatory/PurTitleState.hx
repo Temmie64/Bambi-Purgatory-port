@@ -77,7 +77,7 @@ class PurTitleState extends MusicBeatState
 
 		MusicBeatState.windowNamePrefix = Assets.getText(Paths.txt("windowTitleBase", "preload"));
 
-		curWacky = FlxG.random.getObject(getIntroTextShit());
+		//curWacky = FlxG.random.getObject(getIntroTextShit());
 
 		// DEBUG BULLSHIT
 		

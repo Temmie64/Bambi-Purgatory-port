@@ -16,6 +16,15 @@ import flixel.input.keyboard.FlxKey;
 import Note.EventNote;
 import openfl.events.KeyboardEvent;
 import flixel.util.FlxSave;
+import purgatory.PurFreeplayState;
+import purgatory.PurWeekData;
+import purgatory.NewStoryPurgatory;
+import trolling.SusState;
+import trolling.CheaterState;
+import trolling.YouCheatedSomeoneIsComing;
+import trolling.CrasherState;
+import flixel.system.debug.Window;
+import lime.ui.Window;
 import Achievements;
 import StageData;
 import FunkinLua;
@@ -252,6 +261,29 @@ class PlayState extends MusicBeatState
 
 	public var oldNPS:Float = 0;
 	public var oldOppNPS:Float = 0;
+
+	private var windowSteadyX:Float;
+
+	private var shakeCam:Bool = false;
+	private var shakeCamALT:Bool = false;
+
+	private var fartt:Bool = false;
+	private var fartt2:Bool = false;
+	private var bALLS:Bool = false;
+
+	private var daspinlmao:Bool = false;
+	private var daleftspinlmao:Bool = false;
+
+	private var oppositionMoment:Bool = false;
+
+	private var bfSingYeah:Bool = false;
+	private var dadSingYeah:Bool = false;
+
+	private var camZoomSnap:Bool = false;
+	private var camZoomHalfSnap:Bool = false;
+	private var autoCamZoom:Bool = true;
+
+	public var isNormalStart:Bool = true;
 
 	private var lerpingScore:Bool = false;
 
@@ -653,7 +685,12 @@ class PlayState extends MusicBeatState
 		{
 			detailsText = "Story Mode: " + WeekData.getCurrentWeek().weekName;
 		}
-		else
+		else if (isStoryMode)
+		{
+			detailsText = "Purgatory Story Mode: " + PurWeekData.getCurrentWeek().weekName;
+		}
+	
+		if (isFreeplayPur || isFreeplay)
 		{
 			detailsText = "Freeplay";
 		}
@@ -958,6 +995,20 @@ class PlayState extends MusicBeatState
 		if (OpenFlAssets.exists(file)) {
 			dialogue = CoolUtil.coolTextFile(file);
 		}
+
+		var doof:DialogueBox = new DialogueBox(false, dialogue);
+		// doof.x += 70;
+		// doof.y = FlxG.height * 0.5;
+		doof.scrollFactor.set();
+		switch (curSong.toLowerCase())
+		{
+			case 'roundabout' | 'upheaval-teaser' | 'reheated' | 'lacuna' | 'antagonism-poip-part' | 'dethroned' | 'crimson corridor' | 'demise pt 1' | 'demise pt 2' | 'demise-pt-1' | 'demise-pt-2':
+				doof.finishThing = startSongNoCountDown;
+			default:
+				doof.finishThing = startCountdown;
+		}
+		doof.nextDialogueThing = startNextDialogue;
+		doof.skipDialogueThing = skipDialogue;
 
 		Conductor.songPosition = -5000 / Conductor.songPosition;
 
@@ -1739,7 +1790,7 @@ class PlayState extends MusicBeatState
 		#end
 
 		var daSong:String = Paths.formatToSongPath(curSong);
-		if (isStoryMode || isPurStoryMode || ClientPrefs.freeplayCuts && !seenCutscene)
+		if (isStoryMode || isPurStoryMode || ClientPrefs.alwaysTriggerCutscene && !seenCutscene)
 		{
 			switch (daSong)
 			{
@@ -1811,6 +1862,16 @@ class PlayState extends MusicBeatState
 		Paths.clearUnusedMemory();
 
 		startingTime = haxe.Timer.stamp();
+	}
+
+	static public function quickSpin(sprite)
+	{
+		FlxTween.angle(sprite, 0, 360, 0.5, {
+			type: FlxTween.ONESHOT,
+			ease: FlxEase.quadInOut,
+			startDelay: 0,
+			loopDelay: 0
+		});
 	}
 
 	#if (!flash && sys)
@@ -2179,6 +2240,46 @@ class PlayState extends MusicBeatState
 			startCountdown();
 	}
 
+	function dialogBullshitStart() {
+		startDialogue(dialogueJson);
+	}
+
+	public function startVideoDIALOGUE(name:String):Void
+	{
+		#if VIDEOS_ALLOWED
+		inCutscene = true;
+	
+		var filepath:String = Paths.video(name);
+		#if sys
+		if(!FileSystem.exists(filepath))
+		#else
+		if(!OpenFlAssets.exists(filepath))
+		#end
+		{
+			FlxG.log.warn('Couldnt find video file: ' + name);
+			startAndEnd();
+			return;
+		}
+	
+		var video:MP4Handler = new MP4Handler();
+		video.playVideo(filepath);
+		video.finishCallback = function()
+		{
+			startAndEnd();
+			return;
+		}
+		#else
+		FlxG.log.warn('Platform not supported!');
+		startAndEnd();
+		return;
+		#end
+		if(endingSong) {
+			endSong();
+		} else {
+			startDialogue(dialogueJson);
+		}
+	}
+
 	var dialogueCount:Int = 0;
 	public var psychDialogue:DialogueBoxPsych;
 	//You don't have to add a song, just saying. You can just do "startDialogue(dialogueJson);" and it should work
@@ -2208,7 +2309,16 @@ class PlayState extends MusicBeatState
 			add(psychDialogue);
 		} else {
 			FlxG.log.warn('Your dialogue file is badly formatted!');
-			startAndEnd();
+			if(endingSong) {
+				startAndEnd();
+			} else {
+				switch (curSong.toLowerCase()) {
+					case 'roundabout' | 'upheaval-teaser' | 'reheated' | 'lacuna' | 'antagonism-poip-part' | 'dethroned' | 'crimson corridor' | 'demise pt 1' | 'demise pt 2' | 'demise-pt-1' | 'demise-pt-2':
+						startSongNoCountDown();
+					default:
+			    		startCountdown();
+				}
+			}
 		}
 	}
 
@@ -2573,6 +2683,22 @@ class PlayState extends MusicBeatState
 						introGo.volume = FlxG.sound.volume;
 						introGo.play();
 						tick = GO;
+						strumLineNotes.forEach(function(note)
+						{
+							quickSpin(note);
+						});
+						if(isNormalStart) {
+						   	FlxTween.tween(healthBar, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+						   	FlxTween.tween(healthBarBG, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+							FlxTween.tween(healthBarOverlay, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+						   	FlxTween.tween(iconP1, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+						   	FlxTween.tween(iconP2, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+
+						   	FlxTween.tween(scoreTxt, {alpha:1}, 0.35);
+						   	FlxTween.tween(judgementCounter, {alpha:1}, 0.35);
+					    	FlxTween.tween(songWatermark, {alpha:1}, 0.35);
+						   	FlxTween.tween(creditsWatermark, {alpha:1}, 0.35);
+						}
 						if (ClientPrefs.tauntOnGo && ClientPrefs.charsAndBG)
 						{
 							final charsToHey = [dad, boyfriend, gf];
@@ -2634,6 +2760,120 @@ class PlayState extends MusicBeatState
 				swagCounter += 1;
 			}, 5);
 		}
+	}
+
+	public function startSongNoCountDown():Void
+	{
+		if (SONG.song.toLowerCase() == 'lacuna') {
+			fartt = true;
+		}
+	
+		var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
+		introAssets.set('default', ['ready', 'set', 'go']);
+		introAssets.set('pixel', ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']);
+	
+		var introAlts:Array<String> = introAssets.get('default');
+		var antialias:Bool = ClientPrefs.globalAntialiasing;
+		if(isPixelStage || SONG.player1 == 'bf-pixel-normalpos' || SONG.player1 == 'bf-holding-gf-pixel') {
+			introAlts = introAssets.get('pixel');
+			antialias = false;
+		}
+	
+		inCutscene = false;
+	
+		if (SONG.song.toLowerCase() == 'upheaval-teaser') {
+			isNormalStart = false;
+		}
+	
+		#if android
+		androidc.visible = true;
+		#end
+	
+	
+			generateStaticArrows(0);
+			generateStaticArrows(1);
+			for (i in 0...playerStrums.length) {
+				   setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);
+				setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y);
+			}
+			for (i in 0...opponentStrums.length) {
+				setOnLuas('defaultOpponentStrumX' + i, opponentStrums.members[i].x);
+				  setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y);
+				if(ClientPrefs.middleScroll) opponentStrums.members[i].alpha = 0.35;
+			 }
+	
+			startedCountdown = true;
+			Conductor.songPosition = 0;
+			Conductor.songPosition -= Conductor.crochet * 5;
+	
+			var swagCounter:Int = 0;
+	
+			laneunderlay.x = playerStrums.members[0].x - 25;
+			laneunderlayOpponent.x = opponentStrums.members[0].x - 25;
+			
+			laneunderlay.screenCenter(Y);
+			laneunderlayOpponent.screenCenter(Y);
+	
+			startTimer = new FlxTimer().start(Conductor.crochet / 1000 / playbackRate, function(tmr:FlxTimer)
+			{
+				if (gf != null && tmr.loopsLeft % Math.round(gfSpeed * gf.danceEveryNumBeats) == 0 && !gf.stunned && gf.animation.curAnim.name != null && !gf.animation.curAnim.name.startsWith("sing") && !gf.stunned)
+				{
+					gf.dance();
+				}
+				if (tmr.loopsLeft % boyfriend.danceEveryNumBeats == 0 && boyfriend.animation.curAnim != null && !boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.stunned)
+				{
+					boyfriend.dance();
+				}
+				if (tmr.loopsLeft % dad.danceEveryNumBeats == 0 && dad.animation.curAnim != null && !dad.animation.curAnim.name.startsWith('sing') && !dad.stunned)
+				{
+					dad.dance();
+				}
+				if (boyfriend2 != null)
+					{
+						if (tmr.loopsLeft % boyfriend2.danceEveryNumBeats == 0 && boyfriend2.animation.curAnim != null && !boyfriend2.animation.curAnim.name.startsWith('sing') && !boyfriend2.stunned)
+						{
+							boyfriend2.dance();
+						}
+				}
+	
+				switch (swagCounter)
+				{
+					case 3:
+				}
+					if(isNormalStart) {
+					FlxTween.tween(healthBar, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+					FlxTween.tween(healthBarBG, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+					FlxTween.tween(healthBarOverlay, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+					FlxTween.tween(iconP1, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+					FlxTween.tween(iconP2, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+					/*	FlxTween.tween(healthBarBG, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+					FlxTween.tween(iconP1, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+					FlxTween.tween(iconP2, {alpha:ClientPrefs.healthBarAlpha}, 0.35);
+					 */ // i need to finish this uhhh uhhh
+	
+					FlxTween.tween(scoreTxt, {alpha:1}, 0.35);
+					FlxTween.tween(judgementCounter, {alpha:1}, 0.35);
+					FlxTween.tween(songWatermark, {alpha:1}, 0.35);
+					FlxTween.tween(creditsWatermark, {alpha:1}, 0.35);
+				}
+	
+				notes.forEachAlive(function(note:Note) {
+					if(ClientPrefs.opponentStrums || note.mustPress)
+					{
+						note.copyAlpha = false;
+						note.alpha = note.multAlpha;
+					}
+				});
+	
+				callOnLuas('onCountdownTick', [swagCounter]);
+	
+				swagCounter += 1;
+			 }, 5);
+	
+			strumLineNotes.forEach(function(note)
+			{
+				quickSpin(note);
+			});
 	}
 
 	inline private function createCountdownSprite(image:String, antialias:Bool):FlxSprite
@@ -3924,6 +4164,19 @@ class PlayState extends MusicBeatState
 				}
 		}
 
+		if (FlxG.keys.justPressed.F12 && !endingSong && !inCutscene) // if you have f1 as the debug key thing im so sorry
+		{
+			persistentUpdate = false;
+			paused = true;
+			cancelMusicFadeTween();
+			CustomFadeTransition.nextCamera = camOther;
+			MusicBeatState.switchState(new CheaterState());
+		
+			#if desktop
+			DiscordClient.changePresence("CHEATER FUCK YOU", null, null, true);
+			#end
+		}
+
 		if (iconP1.visible || iconP2.visible)
 		{
 			if (ClientPrefs.iconBounceType == 'Old Psych') {
@@ -4050,6 +4303,13 @@ class PlayState extends MusicBeatState
 			Conductor.songPosition += elapsed * 1000 * playbackRate;
 			for (i in [vocals, opponentVocals])
 				if (i.time >= i.length && i.playing) i.pause();
+		}
+
+		if (FlxG.keys.anyJustPressed(debugKeysCharacter) && !endingSong && !inCutscene) {
+			persistentUpdate = false;
+			paused = true;
+			cancelMusicFadeTween();
+			FlxG.switchState(new CharacterEditorState(SONG.player2));
 		}
 
 		if (startingSong)
@@ -4965,7 +5225,7 @@ class PlayState extends MusicBeatState
 		switch (curSong.toLowerCase()) // ENDING DIALOGUE STUFF WITHOUT LUA
 		{
 	            case 'insanity' | 'maze' | 'splitathon' | 'upheaval': // ADD YOUR SONGS WITH ENDING DIALOGUE HERE
-					if (isStoryMode || isPurStoryMode || ClientPrefs.freeplayCuts) 
+					if (isStoryMode || isPurStoryMode || ClientPrefs.alwaysTriggerCutscene) 
 					{
                         hideshit();
 	         	        canPause = false;
@@ -5235,6 +5495,11 @@ class PlayState extends MusicBeatState
 			else
 			{
 				trace('WENT BACK TO FREEPLAY??');
+				cancelMusicFadeTween();
+				CustomFadeTransition.nextCamera = camOther;
+				if(FlxTransitionableState.skipNextTransIn) {
+					CustomFadeTransition.nextCamera = null;
+				}
 				WeekData.loadTheFirstEnabledMod();
 				#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 				if (!ffmpegMode) FlxG.switchState(new FreeplayState());
@@ -6514,6 +6779,13 @@ class PlayState extends MusicBeatState
 		backend.NoteTypesConfig.clearNoteTypesData();
 
 		super.destroy();
+	}
+
+	public static function cancelMusicFadeTween() {
+		if(FlxG.sound.music.fadeTween != null) {
+			FlxG.sound.music.fadeTween.cancel();
+		}
+		FlxG.sound.music.fadeTween = null;
 	}
 
 	override function stepHit()

@@ -1580,6 +1580,11 @@ class FunkinLua {
 				FlxTransitionableState.skipNextTransOut = true;
 			}
 
+			PlayState.cancelMusicFadeTween();
+			CustomFadeTransition.nextCamera = PlayState.instance.camOther;
+			if(FlxTransitionableState.skipNextTransIn)
+				CustomFadeTransition.nextCamera = null;
+
 			if(FlxG.sound.music != null) FlxG.sound.music.stop();
 
 			if(PlayState.isStoryMode)

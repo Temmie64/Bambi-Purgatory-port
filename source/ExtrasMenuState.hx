@@ -40,6 +40,7 @@ class ExtrasMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 	var camFollowPos:FlxObject;
+	var debugKeys:Array<FlxKey>;
 
 	public static var firstStart:Bool = true;
 
@@ -231,6 +232,12 @@ class ExtrasMenuState extends MusicBeatState
 					}
 				}
 			}
+			#if (desktop)
+			else if (FlxG.keys.anyJustPressed(debugKeys)) {
+				FlxG.switchState(MasterEditorMenu.new);
+			}
+			#end
+			
 			#if desktop
 			if (FlxG.keys.justPressed.SEVEN)
 			{

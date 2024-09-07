@@ -1,5 +1,5 @@
 package;
-import CharacterSelectionState.CharacterUnlockObject;
+//import CharacterSelectionState.CharacterUnlockObject;
 import flixel.*;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
