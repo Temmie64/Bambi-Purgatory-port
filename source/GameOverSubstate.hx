@@ -106,13 +106,24 @@ class GameOverSubstate extends MusicBeatSubstate
 			PlayState.chartingMode = false;
 
 			WeekData.loadTheFirstEnabledMod();
-			if (PlayState.isStoryMode)
-				FlxG.switchState(StoryMenuState.new);
-			else
-				FlxG.switchState(FreeplayState.new);
+			if (PlayState.isStoryMode) {
+				FlxG.switchState(new StoryMenuState());
+			} else if (PlayState.isPurStoryMode) {
+				FlxG.switchState(new NewStoryPurgatory());
+			} else if (PlayState.isFreeplay) {
+				FlxG.switchState(new FreeplayState());
+			} else if (PlayState.isFreeplayPur) {
+				FlxG.switchState(new PurFreeplayState());
+			}
 
-			FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
+			if (PlayState.isFreeplayPur || PlayState.isPurStoryMode) {
+	    		FlxG.sound.playMusic(Paths.music('purFreakyMenu'));
+			}else if (PlayState.isFreeplay || PlayState.isStoryMode) {
+				FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
+			}
+
 			PlayState.instance.callOnLuas('onGameOverConfirm', [false]);
+			PauseSubState.isPlayState = false;
 		}
 
 		if (boyfriend.animation.curAnim != null && boyfriend.animation.curAnim.name == 'firstDeath')

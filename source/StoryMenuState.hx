@@ -303,6 +303,9 @@ class StoryMenuState extends MusicBeatState
 			// Nevermind that's stupid lmao
 			PlayState.storyPlaylist = songArray;
 			PlayState.isStoryMode = true;
+			PlayState.isFreeplay = false;
+			PlayState.isFreeplayPur = false;
+			PlayState.isPurStoryMode = false;
 			selectedWeek = true;
 
 			var diffic = CoolUtil.getDifficultyFilePath(curDifficulty);

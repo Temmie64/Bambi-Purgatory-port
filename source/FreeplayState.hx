@@ -666,6 +666,9 @@ class FreeplayState extends MusicBeatState
 							PlayState.storyDifficulty = curDifficulty;
 						}
 				PlayState.isStoryMode = ClientPrefs.alwaysTriggerCutscene;
+				PlayState.isFreeplay = true;
+				PlayState.isFreeplayPur = false;
+				PlayState.isPurStoryMode = false;
 
 				trace('CURRENT WEEK: ' + WeekData.getWeekFileName());
 				if(colorTween != null) {

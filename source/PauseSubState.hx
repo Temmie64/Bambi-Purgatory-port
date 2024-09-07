@@ -15,6 +15,9 @@ import flixel.util.FlxColor;
 import flixel.FlxCamera;
 import flixel.util.FlxStringUtil;
 import options.OptionsState;
+import purgatory.NewStoryPurgatory;
+import purgatory.PurFreeplayState;
+import purgatory.PurWeekData;
 import GameplayChangersSubstate;
 
 class PauseSubState extends MusicBeatSubstate
@@ -67,6 +70,7 @@ class PauseSubState extends MusicBeatSubstate
 		}
 		difficultyChoices.push('BACK');
 
+		if(PlayState.isStoryMode || PlayState.isPurStoryMode) menuItemsOG.remove('Change Character');
 
 		pauseMusic = new FlxSound();
 		if(songName != null) {
@@ -292,15 +296,31 @@ class PauseSubState extends MusicBeatSubstate
 					persistentUpdate = false;
 					openSubState(new GameplayChangersSubstate());
 					GameplayChangersSubstate.inThePauseMenu = true;
+					if (PlayState.SONG.song.toLowerCase() == "deploration" || PlayState.SONG.song.toLowerCase() == "dishonored")
+					{
+						if (PlayState.window != null)
+						{
+							PlayState.window.close();
+						}
+					}
+
+					if (PlayState.SONG.song.toLowerCase() == "deploration" || PlayState.SONG.song.toLowerCase() == "dishonored")
+					{
+						if (PlayState.window != null)
+						{
+							PlayState.window.close();
+						}
+					}
 				case 'Toggle Botplay':
 					PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
 					PlayState.changedDifficulty = true;
 					if (PlayState.instance.botplayTxt != null) 
 					{
-					PlayState.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
-					PlayState.instance.botplayTxt.alpha = 1;
-					PlayState.instance.botplaySine = 0;
+						PlayState.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
+						PlayState.instance.botplayTxt.alpha = 1;
+						PlayState.instance.botplaySine = 0;
 					}
+
 				case "Options":
 					FlxG.switchState(OptionsState.new);
 					inPause = true;
@@ -310,10 +330,27 @@ class PauseSubState extends MusicBeatSubstate
 						FlxTween.tween(FlxG.sound.music, {volume: 1}, 0.8);
 						FlxG.sound.music.time = pauseMusic.time;
 					}
+
+					if (PlayState.SONG.song.toLowerCase() == "deploration" || PlayState.SONG.song.toLowerCase() == "dishonored")
+					{
+						if (PlayState.window != null)
+						{
+							PlayState.window.close();
+						}
+					}
+
 				case "Exit":
-				if (FlxG.random.int(0, 999) == 10) menuItemsExit = ['Exit To Your Mother'];
-				menuItems = menuItemsExit;
-				regenMenu();
+					if (FlxG.random.int(0, 999) == 10) menuItemsExit = ['Exit To Your Mother'];
+					menuItems = menuItemsExit;
+					regenMenu();
+
+					if (PlayState.SONG.song.toLowerCase() == "deploration" || PlayState.SONG.song.toLowerCase() == "dishonored")
+					{
+						if (PlayState.window != null)
+						{
+							PlayState.window.close();
+						}
+					}
 				}
 			}
 			if (menuItems == menuItemsExit) {
@@ -328,6 +365,12 @@ class PauseSubState extends MusicBeatSubstate
 					} else if (!PlayState.isStoryMode) {
 						FlxG.switchState(FreeplayState.new);
 					}
+
+					if(PlayState.isPurStoryMode) {
+						FlxG.switchState(NewStoryPurgatory.new);
+					} else if (!PlayState.isPurStoryMode) {
+						FlxG.switchState(PurFreeplayState.new);
+					}
 					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
 					PlayState.changedDifficulty = false;
 					PlayState.chartingMode = false;
@@ -337,6 +380,13 @@ class PauseSubState extends MusicBeatSubstate
 
 					WeekData.loadTheFirstEnabledMod();
 						FlxG.switchState(MainMenuState.new);
+
+						if(PlayState.isStoryMode) {
+							FlxG.switchState(MainMenuState.new);
+						} else if (!PlayState.isPurStoryMode) {
+							FlxG.switchState(PurMainMenuState.new);
+						}
+
 					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
 					PlayState.changedDifficulty = false;
 					PlayState.chartingMode = false;

@@ -368,7 +368,7 @@ class PurFreeplayState extends MusicBeatState
 			if (controls.BACK)
 			{
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new PurMainMenuState());
+				FlxG.switchState(new PurMainMenuState());
 			}
 		
 			return;
@@ -423,7 +423,7 @@ class PurFreeplayState extends MusicBeatState
 		if (controls.BACK && allowinputShit)
 			{
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new PurFreeplayState());
+				FlxG.switchState(new PurFreeplayState());
 	
 			if (accepted && allowinputShit)
 			{
@@ -440,7 +440,7 @@ class PurFreeplayState extends MusicBeatState
 				PlayState.storyDifficulty = curDifficulty;
 
 				PlayState.storyWeek = songs[curSelected].week;
-				LoadingState.loadAndSwitchState(new CharacterSelectState());
+				//LoadingState.loadAndSwitchState(new CharacterSelectState());
 			}
 		}
     /*	if (fuckyou)
@@ -508,9 +508,9 @@ class PurFreeplayState extends MusicBeatState
 
 		PlayState.storyWeek = songs[curSelected].week;
 		trace('CURRENT WEEK: ' + PurWeekData.getWeekFileName());
-		CharacterSelectionState.characterFile = 'bf';
-		CharacterSelectionState.scoreMultipliers = [1, 1, 1, 1];
-		LoadingState.loadAndSwitchState(new CharacterSelectionState());
+		//CharacterSelectionState.characterFile = 'bf';
+		//CharacterSelectionState.scoreMultipliers = [1, 1, 1, 1];
+		//LoadingState.loadAndSwitchState(new CharacterSelectionState());
 
 		FlxG.sound.music.volume = 0;
 				

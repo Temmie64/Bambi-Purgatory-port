@@ -61,12 +61,21 @@ class PurMainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		MusicBeatState.windowNameSuffix = " - Purgatory Main Menu";
+		Paths.clearStoredMemory();
+		Paths.clearUnusedMemory();
+
+		#if MODS_ALLOWED
+		Paths.pushGlobalMods();
+		#end
+		WeekData.loadTheFirstEnabledMod();
+
 		#if desktop
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the Menus", null);
+		DiscordClient.changePresence("In the Purgatory Main", null);
 		#end
 
-		debugKeys = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
+		debugKeys = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
 
 		camGame = new FlxCamera();
 		camAchievement = new FlxCamera();
@@ -195,7 +204,7 @@ class PurMainMenuState extends MusicBeatState
 			{
 				selectedSomethin = true;
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new PurTitleState());
+				FlxG.switchState(new PurTitleState());
 				sexo4 = false;
 			}
 
@@ -242,7 +251,7 @@ class PurMainMenuState extends MusicBeatState
 			else if (FlxG.keys.anyJustPressed(debugKeys) #if android || _virtualpad.buttonE.justPressed #end)
 			{
 			  selectedSomethin = true;
-			  MusicBeatState.switchState(new MasterEditorMenu());
+			  FlxG.switchState(new MasterEditorMenu());
 			}
 			#end
 	
@@ -254,26 +263,27 @@ class PurMainMenuState extends MusicBeatState
 				spr.x += 280;
 			});
 		}
+
 	function goToState()
-		{
-			var daChoice:String = optionShit[curSelected];
+	{
+		var daChoice:String = optionShit[curSelected];
 	
-			switch (daChoice)
-			{
-				case 'story_mode':
-					MusicBeatState.switchState(new NewStoryPurgatory());
-				case 'freeplay':
-					MusicBeatState.switchState(new PurFreeplayState());
-				case 'extras':
-					MusicBeatState.switchState(new ExtrasMenuState());
-				case 'credits':
-					MusicBeatState.switchState(new CreditsState());
-				case 'awards':
-					MusicBeatState.switchState(new AchievementsMenuState());
-				case 'options':
-					MusicBeatState.switchState(new options.OptionsState());
-			}
+		switch (daChoice)
+		{
+			case 'story_mode':
+				FlxG.switchState(StoryMenuState.new);
+			case 'freeplay':
+				FlxG.switchState(FreeplayState.new);
+			case 'extras':
+				FlxG.switchState(new ExtrasMenuState());
+			case 'credits':
+				FlxG.switchState(CreditsState.new);
+			case 'awards':
+				LoadingState.loadAndSwitchState(AchievementsMenuState.new);
+			case 'options':
+				LoadingState.loadAndSwitchState(options.OptionsState.new);
 		}
+	}
 
 	function changeItem(huh:Int = 0)
 	{

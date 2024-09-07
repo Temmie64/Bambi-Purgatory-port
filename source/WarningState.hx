@@ -40,12 +40,12 @@ class WarningState extends MusicBeatState
 		
 		if (controls.ACCEPT){
 			FlxG.sound.play(Paths.sound('scrollMenu'));
-			MusicBeatState.switchState(new MainMenuState());
+			FlxG.switchState(new MainMenuState());
 		}
 		if (controls.BACK)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
-			MusicBeatState.switchState(new TitleState());
+			FlxG.switchState(new TitleState());
 		}
 	}
 }

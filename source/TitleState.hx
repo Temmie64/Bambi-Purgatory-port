@@ -29,7 +29,13 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.util.FlxGradient;
 import openfl.Assets;
+import purgatory.PurTitleState;
+import trolling.SusState;
+import trolling.CheaterState;
+import trolling.YouCheatedSomeoneIsComing;
+import trolling.CrasherState;
 
 using StringTools;
 typedef TitleData =
@@ -62,12 +68,7 @@ class TitleState extends MusicBeatState
 	var titleTextColors:Array<FlxColor> = [0xFF33FFFF, 0xFF3333CC];
 	var titleTextAlphas:Array<Float> = [1, .64];
 
-	var blackScreen:FlxSprite;
 	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 1, 0xFF0F5FFF);
-	var credGroup:FlxGroup;
-	var credTextShit:Alphabet;
-	var textGroup:FlxGroup;
-	var logoSpr:FlxSprite;
 
 	var curWacky:Array<String> = [];
 
@@ -82,6 +83,8 @@ class TitleState extends MusicBeatState
 	public static var titleJSON:TitleData;
 
 	public static var updateVersion:String = '';
+
+	private var doTheFunny:Bool = false;
 
 	override public function create():Void
 	{
@@ -443,6 +446,7 @@ class TitleState extends MusicBeatState
 						FlxG.switchState(WarningState.new);
 					}
 					closedState = true;
+					MainMenuState.sexo3 = true;
 				});
 			}
 
@@ -571,10 +575,10 @@ class TitleState extends MusicBeatState
 				// credTextShit.screenCenter();
 				case 5:
 					createCoolText(['A fan tweak and mod of\nThis mod down below'], -60);
-					logoSpr.visible = true;
+					ngSpr.visible = true;
 				case 7:
 					deleteCoolText();
-					logoSpr.visible = false;
+					ngSpr.visible = false;
 				// credTextShit.visible = false;
 					// credTextShit.text = 'Shoutouts Tom Fulp';
 				// credTextShit.screenCenter();

@@ -300,6 +300,7 @@ class MainMenuState extends MusicBeatState
 				selectedSomethin = true;
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				FlxG.switchState(TitleState.new);
+				sexo3 = false;
 			}
 
 			if (controls.ACCEPT)
@@ -392,7 +393,7 @@ class MainMenuState extends MusicBeatState
 			case 'freeplay':
 				FlxG.switchState(FreeplayState.new);
 			case 'extras':
-				MusicBeatState.switchState(new ExtrasMenuState());
+				FlxG.switchState(new ExtrasMenuState());
 			case 'credits':
 				FlxG.switchState(CreditsState.new);
 			case 'awards':

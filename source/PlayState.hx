@@ -117,7 +117,12 @@ class PlayState extends MusicBeatState
 		return stageUI == "pixel" || stageUI.endsWith("-pixel");
 
 	public static var SONG:SwagSong = null;
+
 	public static var isStoryMode:Bool = false;
+	public static var isPurStoryMode:Bool = false;
+	public static var isFreeplayPur:Bool = false;
+	public static var isFreeplay:Bool = false;
+
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
@@ -385,12 +390,23 @@ class PlayState extends MusicBeatState
 	var timeTxtTween:FlxTween;
 	var judgementCounter:FlxText;
 
+	public var redTunnel:FlxSprite;
+	public var redTunnel2:FlxSprite;
+	public var redBG:FlxSprite;
+	public var purpleTunnel:FlxSprite;
+	public var purpleBG:FlxSprite;
+
+	public var thing:FlxSprite = new FlxSprite(0, 250);
+	public var splitathonExpressionAdded:Bool = false;
+
 	public static var campaignScore:Float = 0;
 	public static var campaignMisses:Int = 0;
 	public static var seenCutscene:Bool = false;
 	public static var deathCounter:Int = 0;
 
 	public static var shouldDrainHealth:Bool = false;
+
+	public var daveExpressionSplitathon:Character;
 
 	public var defaultCamZoom:Float = 1.05;
 
@@ -1722,6 +1738,40 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
+		var daSong:String = Paths.formatToSongPath(curSong);
+		if (isStoryMode || isPurStoryMode || ClientPrefs.freeplayCuts && !seenCutscene)
+		{
+			switch (daSong)
+			{
+				case 'senpai' | 'roses' | 'thorns' | 'polygonized' | 'furiosity' | 'cheating' | 'unfairness':
+					if(daSong == 'roses') FlxG.sound.play(Paths.sound('ANGRY'));
+					schoolIntro(doof);
+
+					    case 'tutorial':
+							startDialogue(dialogueJson);						
+		 
+						case 'insanity' | 'blocked' | 'corn-theft' | 'splitathon' | 'shattered' | 'supplanted' | 'reality-breaking' | 'rebound' | 'disposition' | 'upheaval':
+							dialogBullshitStart();
+		 
+						case 'maze':
+							startVideoDIALOGUE('bambiCutscene'); 
+
+						case 'roundabout' | 'upheaval-teaser' | 'reheated' | 'lacuna' | 'antagonism-poip-part' | 'dethroned' | 'crimson corridor' | 'demise pt 1' | 'demise pt 2' | 'demise-pt-1' | 'demise-pt-2':
+							startSongNoCountDown(); // replace this l8 when there's dialogue
+
+					default:
+			    		startCountdown();
+			}
+			seenCutscene = true;
+		} else {
+			switch (curSong.toLowerCase())
+			{
+				case 'roundabout' | 'upheaval-teaser' | 'reheated' | 'lacuna' | 'antagonism-poip-part' | 'dethroned' | 'crimson corridor' | 'demise pt 1' | 'demise pt 2' | 'demise-pt-1' | 'demise-pt-2':
+					startSongNoCountDown();
+				default:
+		         	startCountdown();
+			}
+		}
 		startCallback();
 		RecalculateRating();
 
@@ -4910,6 +4960,52 @@ class PlayState extends MusicBeatState
 
 	public function finishSong(?ignoreNoteOffset:Bool = false):Void
 	{
+		var finishCallback:Void->Void = endSong; //In case you want to change it in a specific song.
+
+		switch (curSong.toLowerCase()) // ENDING DIALOGUE STUFF WITHOUT LUA
+		{
+	            case 'insanity' | 'maze' | 'splitathon' | 'upheaval': // ADD YOUR SONGS WITH ENDING DIALOGUE HERE
+					if (isStoryMode || isPurStoryMode || ClientPrefs.freeplayCuts) 
+					{
+                        hideshit();
+	         	        canPause = false;
+	                    endingSong = true;
+	                 	camZooming = false;
+		                inCutscene = false;
+						deathCounter = 0;
+						seenCutscene = false;
+						updateTime = false;
+						FlxG.sound.music.volume = 0;
+						vocals.volume = 0;
+					}
+					else // ELSE IF DEEZ NUTS IN YOUR MOUTH (FUNNY)
+					{
+						updateTime = false;
+						FlxG.sound.music.volume = 0;
+						vocals.volume = 0;
+						vocals.pause();
+						if(ClientPrefs.noteOffset <= 0 || ignoreNoteOffset) {
+							finishCallback();
+						} else {
+							finishTimer = new FlxTimer().start(ClientPrefs.noteOffset / 1000, function(tmr:FlxTimer) {
+								finishCallback();
+							});
+						}
+					}
+	    	default:
+				updateTime = false;
+				FlxG.sound.music.volume = 0;
+				vocals.volume = 0;
+				vocals.pause();
+				if(ClientPrefs.noteOffset <= 0 || ignoreNoteOffset) {
+					finishCallback();
+				} else {
+					finishTimer = new FlxTimer().start(ClientPrefs.noteOffset / 1000, function(tmr:FlxTimer) {
+						finishCallback();
+					});
+				}
+      	}
+
 		if (!trollingMode && SONG.song.toLowerCase() != 'anti-cheat-song') {
 			updateTime = false;
 			if (ClientPrefs.songLoading) {
@@ -5029,7 +5125,7 @@ class PlayState extends MusicBeatState
 				return;
 			}
 
-			if (isStoryMode)
+			if (isStoryMode || isPurStoryMode)
 			{
 				campaignScore += songScore;
 				campaignMisses += Std.int(songMisses);
@@ -5038,24 +5134,72 @@ class PlayState extends MusicBeatState
 
 				if (storyPlaylist.length <= 0)
 				{
+					cancelMusicFadeTween();
+					CustomFadeTransition.nextCamera = camOther;
+					if(FlxTransitionableState.skipNextTransIn) {
+						CustomFadeTransition.nextCamera = null;
+					}
+
 					WeekData.loadTheFirstEnabledMod();
 					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
 					#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 
 					FlxG.switchState(new StoryMenuState());
 
-					if(!ClientPrefs.getGameplaySetting('practice', false) && !ClientPrefs.getGameplaySetting('botplay', false)) {
-						StoryMenuState.weekCompleted.set(WeekData.weeksList[storyWeek], true);
-
-						if (SONG.validScore)
-						{
-							Highscore.saveWeekScore(WeekData.getWeekFileName(), Std.int(campaignScore), storyDifficulty);
-						}
-
-						FlxG.save.data.weekCompleted = StoryMenuState.weekCompleted;
-						FlxG.save.flush();
+					switch (curSong.toLowerCase())
+					{
+						case 'polygonized':
+							//stupidThing = new Boyfriend(0, 0, "tristan");
+							//unlockCharacter("Tristan", "tristan", null, FlxColor.fromRGB(stupidThing.healthColorArray[0], stupidThing.healthColorArray[1], stupidThing.healthColorArray[2]));
+							//if(characterUnlockObj != null)
+							return;
+							if (health >= 0.1)
+							FlxG.switchState(new EndingState('goodEnding', 'good-ending'));
+							else if (health < 0.1)
+							{
+								FlxG.switchState(new EndingState('vomit_ending', 'bad-ending'));
+							}
+							else
+							FlxG.switchState(new EndingState('badEnding', 'bad-ending'));
+						default:
+							if (isStoryMode){
+								FlxG.sound.playMusic(Paths.music('freakyMenu'));
+								FlxG.switchState(new StoryMenuState());
+							}
+							else if (isPurStoryMode){
+								FlxG.sound.playMusic(Paths.music('purFreakyMenu'));
+								FlxG.switchState(new NewStoryPurgatory());
+							}
 					}
+
+					if(!ClientPrefs.getGameplaySetting('practice', false) && !ClientPrefs.getGameplaySetting('botplay', false)) {
+						if (isStoryMode){
+							StoryMenuState.weekCompleted.set(WeekData.weeksList[storyWeek], true);
+
+							if (SONG.validScore)
+							{
+								Highscore.saveWeekScore(WeekData.getWeekFileName(), Std.int(campaignScore), storyDifficulty);
+							}
+
+							FlxG.save.data.weekCompleted = StoryMenuState.weekCompleted;
+							FlxG.save.flush();
+						}
+						else if (isPurStoryMode){
+							NewStoryPurgatory.weekCompleted.set(PurWeekData.weeksList[storyWeek], true);
+
+							if (SONG.validScore)
+							{
+								Highscore.saveWeekScore(PurWeekData.getWeekFileName(), campaignScore, storyDifficulty);
+							}
+	 
+							FlxG.save.data.weekCompleted = NewStoryPurgatory.weekCompleted;
+							FlxG.save.flush();
+						}
+					}
+					practiceMode = false;
 					changedDifficulty = false;
+					cpuControlled = false;
+					chartingMode = false;
 				}
 				else
 				{

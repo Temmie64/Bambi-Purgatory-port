@@ -3,9 +3,6 @@ package trolling;
 import flixel.*;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-#if windows
-import Discord.DiscordClient;
-#end
 
 /**
  * ...

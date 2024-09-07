@@ -1,7 +1,6 @@
 package purgatory;
 
 #if desktop
-import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
 import flixel.FlxG;
@@ -71,6 +70,16 @@ class PurTitleState extends MusicBeatState
 
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
+
+		MusicBeatState.windowNameSuffix = " - Purgatory Title Screen";
+		// ???
+		MusicBeatState.windowNameSuffix = "";
+
+		MusicBeatState.windowNamePrefix = Assets.getText(Paths.txt("windowTitleBase", "preload"));
+
+		curWacky = FlxG.random.getObject(getIntroTextShit());
+
+		// DEBUG BULLSHIT
 		
 		#if (polymod && !html5)
 		if (sys.FileSystem.exists('mods/')) {
@@ -118,14 +127,14 @@ class PurTitleState extends MusicBeatState
 
 		FlxG.mouse.visible = false;
 		#if FREEPLAY
-		MusicBeatState.switchState(new FreeplayState());
+		FlxG.switchState(new FreeplayState());
 		#elseif CHARTING
-		MusicBeatState.switchState(new ChartingState());
+		FlxG.switchState(new ChartingState());
 		#else
 		if(FlxG.save.data.flashing == null && !FlashingState.leftState) {
 			FlxTransitionableState.skipNextTransIn = true;
 			FlxTransitionableState.skipNextTransOut = true;
-			MusicBeatState.switchState(new FlashingState());
+			FlxG.switchState(new FlashingState());
 		} else {
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
@@ -216,7 +225,7 @@ class PurTitleState extends MusicBeatState
 	
 					new FlxTimer().start(1, function(tmr:FlxTimer)
 					{
-						MusicBeatState.switchState(new TitleState());
+						FlxG.switchState(new TitleState());
 						closedState = true;
 						PurMainMenuState.sexo4 = false;
 					});
@@ -240,7 +249,7 @@ class PurTitleState extends MusicBeatState
 
 				new FlxTimer().start(0.1, function(tmr:FlxTimer)
 				{
-					MusicBeatState.switchState(new PurWarningState());
+					FlxG.switchState(new PurWarningState());
 					closedState = true;
 					PurMainMenuState.sexo4 = true;
 				});

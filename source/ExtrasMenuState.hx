@@ -1,8 +1,5 @@
 package;
 
-#if desktop
-import Discord.DiscordClient;
-#end
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -61,10 +58,20 @@ class ExtrasMenuState extends MusicBeatState
 
 	override function create()
 	{
+		MusicBeatState.windowNameSuffix = " - Extras Menu";
+		Paths.clearStoredMemory();
+		Paths.clearUnusedMemory();
+
+		#if MODS_ALLOWED
+		Paths.pushGlobalMods();
+		#end
+		WeekData.loadTheFirstEnabledMod();
+
 		#if desktop
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the Menus", null);
+		DiscordClient.changePresence("In the Extras", null);
 		#end
+		debugKeys = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
 
 		camGame = new FlxCamera();
 		camAchievement = new FlxCamera();
@@ -174,13 +181,13 @@ class ExtrasMenuState extends MusicBeatState
 			{
 				selectedSomethin = true;
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new MainMenuState());
+				FlxG.switchState(new MainMenuState());
 			}
 			else if (controls.BACK && PurMainMenuState.sexo4)
 			{
 				selectedSomethin = true;
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new PurMainMenuState());
+				FlxG.switchState(new PurMainMenuState());
 			}
 
 			if (controls.ACCEPT)
@@ -228,7 +235,7 @@ class ExtrasMenuState extends MusicBeatState
 			if (FlxG.keys.justPressed.SEVEN)
 			{
 			  selectedSomethin = true;
-			  MusicBeatState.switchState(new MasterEditorMenu());
+			  FlxG.switchState(new MasterEditorMenu());
 			}
 			#end
 	
