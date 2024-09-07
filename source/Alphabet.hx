@@ -26,10 +26,31 @@ class Alphabet extends FlxSpriteGroup
 	public var bold:Bool = false;
 	public var letters:Array<AlphaCharacter> = [];
 
+	// for menu shit
+	public var forceX:Float = Math.NEGATIVE_INFINITY;
+	public var targetY:Float = 0;
+	public var targetX:Float = 0;
+	public var itemType:String = "";
+	public var yMult:Float = 120;
+	public var xAdd:Float = 0;
+	public var yAdd:Float = 0;
 	public var isMenuItem:Bool = false;
-	public var targetY:Int = 0;
+	public var isPauseItem:Bool = false;
+	public var textSize:Float = 1.0;
 	public var changeX:Bool = true;
 	public var changeY:Bool = true;
+
+	public var text:String = "";
+
+	var _finalText:String = "";
+	var yMulti:Float = 1;
+
+	// custom shit
+	// amp, backslash, question mark, apostrophy, comma, angry faic, period
+	var lastSprite:AlphaCharacter;
+	var xPosResetted:Bool = false;
+
+	var splitWords:Array<String> = [];
 
 	public var alignment(default, set):Alignment = LEFT;
 	public var scaleX(default, set):Float = 1;
@@ -38,6 +59,8 @@ class Alphabet extends FlxSpriteGroup
 
 	public var distancePerItem:FlxPoint = new FlxPoint(20, 120);
 	public var startPosition:FlxPoint = new FlxPoint(0, 0); //for the calculations
+
+	public var isBold:Bool = false;
 
 	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = true)
 	{
@@ -173,6 +196,8 @@ class Alphabet extends FlxSpriteGroup
 
 	override function update(elapsed:Float)
 	{
+		var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
+
 		if (isMenuItem)
 		{
 			var lerpVal:Float = Math.exp(-elapsed * 9.6);
@@ -181,6 +206,48 @@ class Alphabet extends FlxSpriteGroup
 			if(changeY)
 				y = FlxMath.lerp((targetY * 1.3 * distancePerItem.y) + startPosition.y, y, lerpVal);
 		}
+
+		if (isPauseItem)
+		{
+			var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
+
+			screenCenter(X);
+
+			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.30);
+			//x = FlxMath.lerp(x, (targetY * 20) + 90, 0.30);
+		}
+
+		switch (itemType)
+		{
+			case "Classic":
+				y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.16);
+				x = FlxMath.lerp(x, (targetY * 20) + 90, 0.16);
+
+			case "Vertical":
+				y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.5), 0.16);
+				x = FlxMath.lerp(x, (targetY * 0) + 308, 0.16);
+				x += targetX;
+			
+			case "C-Shape":
+				y = FlxMath.lerp(y, (scaledY * 65) + (FlxG.height * 0.39), 0.16);
+
+				x = FlxMath.lerp(x, Math.exp(scaledY * 0.8) * 70 + (FlxG.width * 0.1), 0.16);
+				if (scaledY < 0)
+					x = FlxMath.lerp(x, Math.exp(scaledY * -0.8) * 70 + (FlxG.width * 0.1), 0.16);
+
+				if (x > FlxG.width + 30)
+					x = FlxG.width + 30;
+			case "D-Shape":
+				y = FlxMath.lerp(y, (scaledY * 90) + (FlxG.height * 0.45), 0.16);
+	
+				x = FlxMath.lerp(x, Math.exp(scaledY * 0.8) * -70 + (FlxG.width * 0.35), 0.16);
+				if (scaledY < 0)
+					x = FlxMath.lerp(x, Math.exp(scaledY * -0.8) * -70 + (FlxG.width * 0.35), 0.16);
+	
+				if (x < -900)
+					x = -900;
+		}
+
 		super.update(elapsed);
 	}
 
