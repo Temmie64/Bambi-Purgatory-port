@@ -50,13 +50,13 @@ class ExtrasMenuState extends MusicBeatState
 
 	public static var bgPaths:Array<String> = 
 	[
-		'backgrounds/SUSSUS AMOGUS',
-		'backgrounds/SwagnotrllyTheMod',
-		'backgrounds/Olyantwo',
-		'backgrounds/morie',
-		'backgrounds/mantis',
-		'backgrounds/mamakotomi',
-		'backgrounds/T5mpler'
+		'SUSSUS AMOGUS',
+		'SwagnotrllyTheMod',
+		'Olyantwo',
+		'morie',
+		'mantis',
+		'mamakotomi',
+		'T5mpler'
 	];
 
 	override function create()
@@ -298,9 +298,10 @@ class ExtrasMenuState extends MusicBeatState
 			}
 		});
 	}
+
 	public static function randomizeBG():flixel.system.FlxAssets.FlxGraphicAsset
 	{
 		var chance:Int = FlxG.random.int(0, bgPaths.length - 1);
-		return Paths.image(bgPaths[chance]);
+		return Paths.image('backgrounds/${bgPaths[chance]}');
 	}
 }
