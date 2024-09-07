@@ -31,7 +31,7 @@ class PurMainMenuState extends MusicBeatState
 	private var camGame:FlxCamera;
 	private var camAchievement:FlxCamera;
 	
-	var optionShit:Array<String> = ['story_mode', 'freeplay', 'extras', 'options'];
+	var optionShit:Array<String> = ['story_mode', 'extras', 'options'];
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -270,8 +270,6 @@ class PurMainMenuState extends MusicBeatState
 		{
 			case 'story_mode':
 				FlxG.switchState(StoryMenuState.new);
-			case 'freeplay':
-				FlxG.switchState(FreeplayState.new);
 			case 'extras':
 				FlxG.switchState(new ExtrasMenuState());
 			case 'credits':
