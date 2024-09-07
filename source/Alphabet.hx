@@ -40,8 +40,6 @@ class Alphabet extends FlxSpriteGroup
 	public var changeX:Bool = true;
 	public var changeY:Bool = true;
 
-	public var text:String = "";
-
 	var _finalText:String = "";
 	var yMulti:Float = 1;
 
