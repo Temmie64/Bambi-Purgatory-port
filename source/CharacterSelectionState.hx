@@ -14,6 +14,7 @@ import flixel.util.FlxTimer;
 import flixel.math.FlxMath;
 import flixel.util.FlxStringUtil;
 import purgatory.PurFreeplayState;
+import Character.Boyfriend;
 
 class CharacterSelectionState extends MusicBeatState //This is not from the D&B source code, it's completely made by me (Delta).
 {
@@ -27,7 +28,7 @@ class CharacterSelectionState extends MusicBeatState //This is not from the D&B 
         ["Drip Dave", [["Drip Dave", 'dave-drip']], [0.42, 0.69, 0.42, 0.69/*Nice*/], true],
         ["Expunged", [["3D Bambi", 'bambi-3d'], ["Unfair Bambi", 'bambi-unfair']], [0, 0, 0, 3], false]
     ];
-    var characterSprite:Boyfriend;
+    var characterSprite:Character.Boyfriend;
     public static var characterFile:String = 'bf';
 
 	var nightColor:FlxColor = 0xFF878787;
