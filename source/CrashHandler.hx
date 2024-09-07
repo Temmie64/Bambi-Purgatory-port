@@ -59,19 +59,28 @@ class CrashHandler
 
 		path = "crash/" + "JSEngine_" + dateNow + ".log";
 
-		for (stackItem in stack) {
-			switch (stackItem) {
-				case FilePos(s, file, line, column):
-					stackLabelArr.push(file + " (Line " + line + ")");
-				default:
-					Sys.println(stackItem);
+		for(stackItem in stack) {
+			switch(stackItem) {
+				case CFunction: stackLabelArr.push("Non-Haxe (C) Function");
+				case Module(c): stackLabelArr.push('Module ${c}');
+				case FilePos(parent, file, line, col):
+					switch(parent) {
+						case Method(cla, func):
+							stackLabelArr.push('${file.replace('.hx', '')}.$func() [line $line]');
+						case _:
+							stackLabelArr.push('${file.replace('.hx', '')} [line $line]');
+					}
+				case LocalFunction(v):
+					stackLabelArr.push('Local Function ${v}');
+				case Method(cl, m):
+					stackLabelArr.push('${cl} - ${m}');
 			}
 		}
 		stackLabel = stackLabelArr.join('\r\n');
 
-		errorMessage += "\nUncaught Error: " 
+		errorMessage += "Uncaught Error: " 
 			+ '$m\n$stackLabel'
-			+ "\nPlease report this error to the GitHub page: https://github.com/JordanSantiagoYT/FNF-JS-Engine>"
+			+ "\nPlease report this error to the GitHub page: https://github.com/JordanSantiagoYT/FNF-JS-Engine"
 			+ "\nThe engine has saved a crash log inside the crash folder, If you're making a GitHub issue you might want to send that!";
 
 		#if sys

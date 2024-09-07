@@ -23,7 +23,7 @@ using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
-	public static var psychEngineJSVersion:String = '1.33.0'; //This is also used for Discord RPC
+	public static var psychEngineJSVersion:String = '1.33.3'; //This is also used for Discord RPC
 	public static var psychEngineVersion:String = '0.6.3'; //This is also used for Discord RPC
 	public static var curModVer:String = '2.0 Prototype'; //This is also used for yo maama aaa
 	public static var curSelected:Int = 0;

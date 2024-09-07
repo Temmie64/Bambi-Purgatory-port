@@ -410,6 +410,12 @@ class TitleState extends MusicBeatState
 			if (titleTimer > 2) titleTimer -= 2;
 		}
 
+		// for testing purposes
+		/*
+		if (FlxG.keys.checkStatus(FlxKey.SEVEN, JUST_PRESSED))
+			throw 'Crash test';
+		*/
+
 		// EASTER EGG
 
 		if (initialized && !transitioning && skippedIntro)

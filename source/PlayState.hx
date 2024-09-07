@@ -144,7 +144,6 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
-	public var tries:Int = 0;
 	public var firstNoteStrumTime:Float = 0;
 	var winning:Bool = false;
 	var losing:Bool = false;
@@ -212,14 +211,6 @@ class PlayState extends MusicBeatState
 	public var camFollowPos:FlxObject;
 	private static var prevCamFollow:FlxPoint;
 	private static var prevCamFollowPos:FlxObject;
-	public var judgeColours:Map<String, FlxColor> = [
-		"perfect" => 0xFFE367E5,
-		"sick" => FlxColor.CYAN,
-		"good" => FlxColor.LIME,
-		"bad" => FlxColor.ORANGE,
-		"shit" => FlxColor.RED,
-		"miss" => 0xFF7F2626
-	];
 
 	public var strumLineNotes:FlxTypedGroup<StrumNote>;
 	public var opponentStrums:FlxTypedGroup<StrumNote>;
@@ -387,7 +378,6 @@ class PlayState extends MusicBeatState
 	public var camGame:FlxCamera;
 	public var camOther:FlxCamera;
 	public var cameraSpeed:Float = 1;
-	var hueh231:FlxSprite;
 	var secretsong:FlxSprite;
 	var hitsoundImage:FlxSprite;
 	var hitsoundImageToLoad:String;
@@ -5392,6 +5382,7 @@ class PlayState extends MusicBeatState
 				FlxG.sound.music.volume = 0;
 				vocals.volume = opponentVocals.volume = 0;
 			}
+			FlxG.mouse.unload(); // just in case you changed it beforehand
 			pauseVocals();
 			if(!ffmpegMode){
 				if(ClientPrefs.noteOffset <= 0 || ignoreNoteOffset) {

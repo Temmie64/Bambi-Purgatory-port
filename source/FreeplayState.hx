@@ -90,6 +90,20 @@ class FreeplayState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
+		final accept:String = "ACCEPT";
+		final reject:String = "BACK";
+
+		if(WeekData.weeksList.length < 1)
+		{
+			FlxTransitionableState.skipNextTransIn = true;
+			persistentUpdate = false;
+			var msg:String = "NO WEEKS ADDED FOR FREEPLAY\n\nPress " + accept + " to go to the Week Editor Menu.\nPress " + reject + " to return to Main Menu.";
+			FlxG.switchState(new ErrorState(msg,
+				function() FlxG.switchState(new editors.WeekEditorState()),
+				function() FlxG.switchState(new MainMenuState())));
+			return;
+		}
+
 		for (i in 0...WeekData.weeksList.length) {
 			if(weekIsLocked(WeekData.weeksList[i])) continue;
 
