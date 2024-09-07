@@ -53,8 +53,6 @@ class FreeplayState extends MusicBeatState
 	var bottomText:FlxText;
 	var bottomBG:FlxSprite;
 
-	public static var curPlaying:Bool = false;
-
 	var lerpSelected:Float = 0;
 
 	var bg:FlxSprite;
@@ -69,7 +67,7 @@ class FreeplayState extends MusicBeatState
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var grpIcons:FlxTypedGroup<HealthIcon>;
-	private var curPlaying:Bool = false;
+	public static var curPlaying:Bool = false;
 	private var curChar:String = "unknown";
 
 	public static var fart:Bool = false;

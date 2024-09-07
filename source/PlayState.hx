@@ -5596,7 +5596,7 @@ class PlayState extends MusicBeatState
 
 							if (SONG.validScore)
 							{
-								Highscore.saveWeekScore(PurWeekData.getWeekFileName(), campaignScore, storyDifficulty);
+								Highscore.saveWeekScore(PurWeekData.getWeekFileName(), Std.int(campaignScore), storyDifficulty);
 							}
 	 
 							FlxG.save.data.weekCompleted = NewStoryPurgatory.weekCompleted;
