@@ -1,5 +1,8 @@
 package;
 
+import CharacterSelectionState.CharacterUnlockObject;
+import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxFrame;
 import Section.SwagSection;
 import Song.SwagSong;
 import flixel.FlxObject;
@@ -382,6 +385,20 @@ class PlayState extends MusicBeatState
 	var secretsong:FlxSprite;
 	var hitsoundImage:FlxSprite;
 	var hitsoundImageToLoad:String;
+
+	public static var offsetTesting:Bool = false;
+
+	var expungedBG:BGSprite;
+	var preDadPos:FlxPoint = new FlxPoint();
+
+	public static var window:Window;
+	var expungedScroll = new Sprite();
+	var expungedSpr = new Sprite();
+	var windowProperties:Array<Dynamic> = new Array<Dynamic>();
+	var expungedWindowMode:Bool = false;
+	var expungedOffset:FlxPoint = new FlxPoint();
+	var expungedMoving:Bool = true;
+	var lastFrame:FlxFrame;
 
 	//ok moxie this doesn't cause memory leaks
 	public var scoreTxtUpdateFrame:Int = 0;
@@ -2274,7 +2291,7 @@ class PlayState extends MusicBeatState
 	function hideshit() // basically a camHUD.visible = false; except it doesnt fuck up dialogue (and i didnt want to do another camera for the dialogue)
 	{
 		if(!ClientPrefs.hideHud) {
-			songWatermark.visible = false;
+			//songWatermark.visible = false;
 			healthBar.visible = false;
 			healthBarBG.visible = false;
 			iconP1.visible = false;
@@ -2295,7 +2312,7 @@ class PlayState extends MusicBeatState
 	function showshit()
 	{
 		if(!ClientPrefs.hideHud) {
-			songWatermark.visible = true;
+			//songWatermark.visible = true;
 			healthBar.visible = true;
 			healthBarBG.visible = true;
 			iconP1.visible = true;
@@ -2315,7 +2332,7 @@ class PlayState extends MusicBeatState
 	
 	function showonlystrums() // does the thing that it says
 	{
-		songWatermark.visible = true;
+		//songWatermark.visible = true;
 		judgementCounter.visible = true;
 		if(!ClientPrefs.hideHud) {
 			healthBar.visible = false;
@@ -2796,7 +2813,7 @@ class PlayState extends MusicBeatState
 
 						   	FlxTween.tween(scoreTxt, {alpha:1}, 0.35);
 						   	FlxTween.tween(judgementCounter, {alpha:1}, 0.35);
-					    	FlxTween.tween(songWatermark, {alpha:1}, 0.35);
+					    	//FlxTween.tween(songWatermark, {alpha:1}, 0.35);
 						}
 						if (ClientPrefs.tauntOnGo && ClientPrefs.charsAndBG)
 						{
@@ -2951,7 +2968,7 @@ class PlayState extends MusicBeatState
 	
 					FlxTween.tween(scoreTxt, {alpha:1}, 0.35);
 					FlxTween.tween(judgementCounter, {alpha:1}, 0.35);
-					FlxTween.tween(songWatermark, {alpha:1}, 0.35);
+					//FlxTween.tween(songWatermark, {alpha:1}, 0.35);
 				}
 	
 				notes.forEachAlive(function(note:Note) {
@@ -4267,7 +4284,7 @@ class PlayState extends MusicBeatState
 			paused = true;
 			cancelMusicFadeTween();
 			CustomFadeTransition.nextCamera = camOther;
-			MusicBeatState.switchState(new CheaterState());
+			FlxG.switchState(new CheaterState());
 		
 			#if desktop
 			DiscordClient.changePresence("CHEATER FUCK YOU", null, null, true);
@@ -5459,12 +5476,12 @@ class PlayState extends MusicBeatState
 		PauseSubState.isPlayState = false;
 
 		#if windows
-		if (window != null)
-		{
-			window.close();
-			expungedWindowMode = false;
-			window = null;
-		}
+			if (window != null)
+			{
+				window.close();
+				expungedWindowMode = false;
+				window = null;
+			}
 		#end
 		
 		timeBarBG.visible = false;
@@ -7585,6 +7602,109 @@ class PlayState extends MusicBeatState
 		setOnLuas('rating', ratingPercent);
 		setOnLuas('ratingName', ratingName);
 		setOnLuas('ratingFC', ratingFC);
+	}
+
+	public function addSplitathonChar(char:String):Void
+	{
+		boyfriend.stunned = true; //hopefully this stun stuff should prevent BF from randomly missing a note
+		remove(dad);
+		dad = new Character(100, 100, char);
+		add(dad);
+		dad.color = 0xFF878787;
+		switch (dad.curCharacter)
+		{
+			case 'dave-splitathon':
+				{
+					dad.y += 160;
+					dad.x += 250;
+				}
+			case 'bambi-splitathon':
+	    		{
+					dad.x += 100;
+					dad.y += 450;
+				}
+		}
+		boyfriend.stunned = false;
+	}
+	
+	public function splitterThonDave(expression:String):Void
+	{
+		boyfriend.stunned = true; //hopefully this stun stuff should prevent BF from randomly missing a note
+		//stupid bullshit cuz i dont wanna bother with removing thing erighkjrehjgt
+		thing.x = -9000;
+		thing.y = -9000;
+		if(daveExpressionSplitathon != null)
+			remove(daveExpressionSplitathon);
+		daveExpressionSplitathon = new Character(-200, 260, 'dave-splitathon');
+		add(daveExpressionSplitathon);
+		daveExpressionSplitathon.color = 0xFF878787;
+		daveExpressionSplitathon.playAnim(expression, true);
+		boyfriend.stunned = false;
+	}
+
+	var characterUnlockObj:CharacterUnlockObject = null;
+
+	public function unlockCharacter(characterToUnlock:String, characterIcon:String, characterDisplayName:String = null, color:FlxColor = FlxColor.BLACK, botplayUnlocks:Bool = false)
+	{
+		if(!chartingMode || botplayUnlocks)
+			{if(!FlxG.save.data.unlockedCharacters.contains(characterToUnlock))
+			{
+				if(characterDisplayName == null)
+					characterDisplayName = characterToUnlock;
+				characterUnlockObj = new CharacterUnlockObject(characterDisplayName, camOther, characterIcon, color);
+				characterUnlockObj.onFinish = characterUnlockEnd;
+				add(characterUnlockObj);
+				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+				FlxG.save.data.unlockedCharacters.push(characterToUnlock);
+			}
+		}
+	}
+		
+	function characterUnlockEnd():Void
+	{
+		characterUnlockObj = null;
+		if(endingSong && !inCutscene) {
+			endSong();
+		}
+	}
+	
+	public function splitathonExpression(expression:String, x:Float, y:Float):Void
+	{
+		if (SONG.song.toLowerCase() == 'splitathon' || SONG.song.toLowerCase() == 'old-splitathon')
+		{
+			if(daveExpressionSplitathon != null)
+			{
+				remove(daveExpressionSplitathon);
+			}
+			if (expression != 'lookup')
+			{
+				camFollowPos.setPosition(dad.getGraphicMidpoint().x + 100, boyfriend.getGraphicMidpoint().y + 150);
+			}
+			boyfriend.stunned = true;
+			thing.color = 0xFF878787;
+			thing.x = x;
+			thing.y = y;
+			remove(dad);
+	
+			switch (expression)
+			{
+				case 'bambi-what':
+					thing.frames = Paths.getSparrowAtlas('splitathon/Bambi_WaitWhatNow');
+					thing.animation.addByPrefix('uhhhImConfusedWhatsHappening', 'what', 24);
+					thing.animation.play('uhhhImConfusedWhatsHappening');
+				case 'bambi-corn':
+					thing.frames = Paths.getSparrowAtlas('splitathon/Bambi_ChillingWithTheCorn');
+					thing.animation.addByPrefix('justGonnaChillHereEatinCorn', 'cool', 24);
+					thing.animation.play('justGonnaChillHereEatinCorn');
+			}
+			if (!splitathonExpressionAdded)
+			{
+				splitathonExpressionAdded = true;
+				add(thing);
+			}
+			thing.antialiasing = true;
+			boyfriend.stunned = false;
+		}
 	}
 
 	#if ACHIEVEMENTS_ALLOWED

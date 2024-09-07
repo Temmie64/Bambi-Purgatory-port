@@ -22,6 +22,7 @@ import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
 import flixel.FlxState;
+import purgatory.PurFreeplayState;
 
 using StringTools;
 
