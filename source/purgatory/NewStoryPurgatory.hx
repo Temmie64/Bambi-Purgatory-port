@@ -166,7 +166,7 @@ class NewStoryPurgatory extends MusicBeatState
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.mouse.visible = false;
-			MusicBeatState.switchState(new PurMainMenuState());
+			FlxG.switchState(new PurMainMenuState());
 				
 		}
 		
@@ -416,7 +416,7 @@ class Section2Substate extends MusicBeatSubstate
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.mouse.visible = false;
-			MusicBeatState.switchState(new PurMainMenuState());
+			FlxG.switchState(new PurMainMenuState());
 				
 		}
 		

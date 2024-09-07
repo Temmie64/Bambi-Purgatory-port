@@ -308,7 +308,7 @@ class PurTitleState extends MusicBeatState
 			bg.antialiasing = ClientPrefs.globalAntialiasing;
 			add(bg);
 	
-			slidething = new FlxBackdrop(Paths.image('hahaslider'),1,0,true,false);
+			slidething = new FlxBackdrop(Paths.image('hahaslider'),X);
 			slidething.velocity.set(-14,0);
 			slidething.x = -20;
 			slidething.y = 209;

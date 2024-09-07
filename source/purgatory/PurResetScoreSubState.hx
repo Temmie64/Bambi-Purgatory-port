@@ -48,7 +48,8 @@ class PurResetScoreSubState extends MusicBeatSubstate
 		alphabetArray.push(text);
 		text.alpha = 0;
 		add(text);
-		var text:Alphabet = new Alphabet(0, text.y + 90, name, true, false, 0.05, tooLong);
+		var text:Alphabet = new Alphabet(0, text.y + 90, name, true);
+		text.scaleX = tooLong;
 		text.screenCenter(X);
 		if(week == -1) text.x += 60 * tooLong;
 		alphabetArray.push(text);
@@ -62,7 +63,7 @@ class PurResetScoreSubState extends MusicBeatSubstate
 			icon.alpha = 0;
 			add(icon);
 		}
-
+		
 		yesText = new Alphabet(0, text.y + 150, 'Yes', true);
 		yesText.screenCenter(X);
 		yesText.x -= 200;
@@ -72,11 +73,6 @@ class PurResetScoreSubState extends MusicBeatSubstate
 		noText.x += 200;
 		add(noText);
 		updateOptions();
-
-                #if android
-                addVirtualPad(LEFT_RIGHT, A_B);
-                addPadCamera();
-                #end
 	}
 
 	override function update(elapsed:Float)
@@ -97,13 +93,7 @@ class PurResetScoreSubState extends MusicBeatSubstate
 		}
 		if(controls.BACK) {
 			FlxG.sound.play(Paths.sound('cancelMenu'), 1);
-			#if android
-            MusicBeatState.resetState();
-            #else
-            close();
-            #end
-			FreeplayState.fart = true;
-			PurFreeplayState.fart = true;
+			close();
 		} else if(controls.ACCEPT) {
 			if(onYes) {
 				if(week == -1) {
@@ -113,13 +103,7 @@ class PurResetScoreSubState extends MusicBeatSubstate
 				}
 			}
 			FlxG.sound.play(Paths.sound('cancelMenu'), 1);
-			#if android
-                        MusicBeatState.resetState();
-                        #else
-                        close();
-                        #end
-			FreeplayState.fart = true;
-			PurFreeplayState.fart = true;
+			close();
 		}
 		super.update(elapsed);
 	}

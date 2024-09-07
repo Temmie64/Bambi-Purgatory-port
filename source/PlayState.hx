@@ -37,6 +37,12 @@ import Character.Boyfriend;
 import Shaders;
 import Note.PreloadedChartNote;
 
+import lime.app.Application;
+import openfl.Lib;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
+import openfl.display.Sprite;
+
 #if !flash
 import flixel.addons.display.FlxRuntimeShader;
 import openfl.filters.ShaderFilter;
@@ -5585,8 +5591,7 @@ class PlayState extends MusicBeatState
 
 							FlxG.save.data.weekCompleted = StoryMenuState.weekCompleted;
 							FlxG.save.flush();
-						}
-						else if (isPurStoryMode){
+						} else if (isPurStoryMode){
 							NewStoryPurgatory.weekCompleted.set(PurWeekData.weeksList[storyWeek], true);
 
 							if (SONG.validScore)
