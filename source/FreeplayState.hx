@@ -87,6 +87,8 @@ class FreeplayState extends MusicBeatState
 
 	var loadingPack:Bool = false;
 
+	private var iconArray:Array<HealthIcon> = [];
+
 	var songColors:Array<FlxColor> = [
 		0xFF000000, // DUMBASS PLACEHOLDER
 		0xFF4965FF, // DAVE
@@ -288,7 +290,7 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true);
 			songText.isMenuItem = false;
 			songText.itemType = "D-Shape";
 			songText.targetY = i - curSelected;
@@ -441,6 +443,21 @@ class FreeplayState extends MusicBeatState
 					remove(txt);
 			});
 			return;
+		}
+	}
+
+	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
+	{
+		if (songCharacters == null)
+			songCharacters = ['bf'];
+	
+		var num:Int = 0;
+		for (song in songs)
+		{
+			addSong(song, weekNum, songCharacters[num]);
+	
+			if (songCharacters.length != 1)
+				num++;
 		}
 	}
 
@@ -1084,6 +1101,8 @@ class FreeplayState extends MusicBeatState
 	}
 	override function beatHit() {
 		super.beatHit();
+
+		FlxTween.tween(FlxG.camera, {zoom:1.05}, 0.3, {ease: FlxEase.quadOut, type: BACKWARD});
 
 		if (curPlaying)
 			if (grpIcons.members[instPlaying] != null && grpIcons.members[instPlaying].canBounce) grpIcons.members[instPlaying].bounce();
