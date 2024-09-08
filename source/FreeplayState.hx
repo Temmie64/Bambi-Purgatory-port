@@ -18,6 +18,7 @@ import openfl.utils.Assets as OpenFlAssets;
 import flixel.util.FlxTimer;
 import flixel.util.FlxStringUtil; //for formatting the note count
 import WeekData;
+import CategoryState:
 #if MODS_ALLOWED
 import sys.FileSystem;
 #end
@@ -268,12 +269,6 @@ class FreeplayState extends MusicBeatState
 		FlxG.mouse.visible = true;
 
 		super.create();
-	}
-
-	override function closeSubState() {
-		changeSelection(0, false);
-		persistentUpdate = true;
-		super.closeSubState();
 	}
 
 	function checkForSongsThatMatch(?start:String = '')
@@ -748,14 +743,6 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 		super.update(elapsed);
-	}
-
-	public static function destroyFreeplayVocals() {
-		if(vocals != null) {
-			vocals.stop();
-			vocals.destroy();
-		}
-		vocals = null;
 	}
 
 	function getVocalFromCharacter(char:String)
