@@ -18,7 +18,7 @@ import openfl.utils.Assets as OpenFlAssets;
 import flixel.util.FlxTimer;
 import flixel.util.FlxStringUtil; //for formatting the note count
 import WeekData;
-import CategoryState:
+import CategoryState;
 #if MODS_ALLOWED
 import sys.FileSystem;
 #end
