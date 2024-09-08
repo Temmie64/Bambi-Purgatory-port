@@ -18,7 +18,6 @@ import openfl.utils.Assets as OpenFlAssets;
 import flixel.util.FlxTimer;
 import flixel.util.FlxStringUtil; //for formatting the note count
 import WeekData;
-import CategoryState;
 #if MODS_ALLOWED
 import sys.FileSystem;
 #end
@@ -54,6 +53,11 @@ class FreeplayState extends MusicBeatState
 	var bottomText:FlxText;
 	var bottomBG:FlxSprite;
 
+	private var grpSongs:FlxTypedGroup<Alphabet>;
+	private var grpIcons:FlxTypedGroup<HealthIcon>;
+
+	public static var curPlaying:Bool = false;
+
 	var lerpSelected:Float = 0;
 
 	var bg:FlxSprite;
@@ -66,14 +70,38 @@ class FreeplayState extends MusicBeatState
 
 	var player:MusicPlayer;
 
-	private var grpSongs:FlxTypedGroup<Alphabet>;
-	private var grpIcons:FlxTypedGroup<HealthIcon>;
-	private var iconArray:Array<HealthIcon> = [];
-	public static var curPlaying:Bool = false;
 	private var curChar:String = "unknown";
 
 	public static var fart:Bool = false;
+
+	private var InMainFreeplayState:Bool = false;
+	private var isInMods:Bool = false;
+
 	public var allowinputShit:Bool = true;
+
+	private var CurrentSongIcon:FlxSprite;
+
+	private var AllPossibleSongs:Array<String> = ["dave", "old", "extrasandfanmades", "joke", "mods"];
+
+	private var CurrentPack:Int = 0;
+
+	var loadingPack:Bool = false;
+
+	var songColors:Array<FlxColor> = [
+		0xFF000000, // DUMBASS PLACEHOLDER
+		0xFF4965FF, // DAVE
+		0xFFDC97AA, // ANGEY ANGER
+		0xFF00B515, // MISTER BAMBI
+		0xFF4965FF, // fdfdfd
+		0xFFA40B09, // EVIL UNFAIRNESSSSS
+		0xFFFF0030, // 3d dave og color scary (sharted)
+		0xFF4965FF, // fdfdfd
+		0xFF4965FF, // fdfdfd
+		0xFF4965FF, // fdfdfd
+		0xFF4965FF, // fdfdfd
+		0xFF4965FF, // fdfdfd
+		0xFF00FFFF, // SPLIT THE THONNNNN 12
+    ];
 
 	override function create()
 	{
@@ -85,17 +113,130 @@ class FreeplayState extends MusicBeatState
 		
 		persistentUpdate = true;
 		PlayState.isStoryMode = false;
-		WeekData.reloadCustomWeekFiles(CategoryState.categorySelected, false); //this will load the category songs !111
-		if (CategoryState.categorySelected == null)
-		{
-			WeekData.reloadWeekFiles(false);
-		}
+		WeekData.reloadWeekFiles(false);
 
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
+		bg.loadGraphic(MainMenuState.randomizeBG());
+		bg.color = 0xFF4965FF;
+		add(bg);
+
+		CurrentSongIcon = new FlxSprite(0,0).loadGraphic(Paths.image('week_icons_' + (AllPossibleSongs[CurrentPack].toLowerCase())));
+
+		CurrentSongIcon.centerOffsets(false);
+		CurrentSongIcon.x = (FlxG.width / 2) - 256;
+		CurrentSongIcon.y = (FlxG.height / 2) - -605; // haxe is weird
+		CurrentSongIcon.antialiasing = true;
+
+		add(CurrentSongIcon);
+
+		FlxTween.tween(CurrentSongIcon,{y: 50}, 1.4, {ease: FlxEase.expoInOut});
+
+		isInMods = false;
+
+		for (i in 0...songs.length)
+		{
+			var songText:Alphabet = new Alphabet(90, 320, songs[i].songName, true);
+			songText.isMenuItem = true;
+			songText.targetY = i - curSelected;
+			grpSongs.add(songText);
+
+			var maxWidth = 980;
+			if (songText.width > maxWidth)
+			{
+				songText.scaleX = maxWidth / songText.width;
+			}
+			songText.snapToPosition();
+
+			Paths.currentModDirectory = songs[i].folder;
+			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+			icon.sprTracker = songText;
+			icon.ID = i;
+			grpIcons.add(icon);
+
+			// songText.x += 40;
+			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+			// songText.screenCenter(X);
+		}
+		WeekData.setDirectoryFromWeek();
+
+		super.create();
+	}
+
+	public function LoadProperPack()
+	{
+		switch (AllPossibleSongs[CurrentPack].toLowerCase())
+		{
+			case 'dave':
+				addWeek(['House', 'Insanity'], 1, ['dave']);
+				addWeek(['Polygonized'], 2,['dave3d']);
+				addWeek(['Bonus-Song'], 1,['dave']);
+				addWeek(['Blocked','Corn-Theft','Maze',], 3, ['bambi']);
+				addWeek(['Splitathon'], 12,['splitathon']);
+			case 'old':
+				addWeek(['Old-House', 'Old-Insanity'], 1, ['daveOld']);
+				addWeek(['Old-Furiosity'], 2,['davesharted']);
+				addWeek(['Old-Blocked', 'Old-Corn-Theft', 'beta-maze', 'Old-Maze'], 3, ['bamberfunny']);
+				addWeek(['Old-Splitathon'], 12, ['Splitathon']);
+			case 'joke':
+                addWeek(['Supernovae', 'Glitch', 'Vs-Dave-Thanksgiving', 'vs-dave-christmas'], 3, ['bambiJoke']);
+				addWeek(['Master', 'Mastered'], 3, ['bambi-joke-mad']);
+				#if !debug
+				if (FlxG.save.data.cheatingFound)
+				#end
+				addWeek(['Cheating'], 3, ['bambi3d']);
+				addWeek(['Cheating B-Side'], 3, ['bambi3d']);
+				#if !debug
+				if (FlxG.save.data.unfairnessFound)
+				#end
+				addWeek(['Unfairness'], 5, ['bambi3dUnfair']);
+				addWeek(['Exploitation'], 5, ['expunged']);
+				case 'extrasandfanmades':
+				addWeek(['Furiosity'], 2, ['dave3d']);
+				addWeek(['Mealie'], 3, ['bambi']);
+				addWeek(['8-28-63'], 1, ['splitathon']);
+				addWeek(['Disruption'], 3, ['bambiPISSED']);
+				addWeek(['Bambi-Bass'], 3, ['bambiPISSED']);
+				addWeek(['Sucked'], 3, ['bamberfunny']);
+				//addWeek(['Monochrome'], 5, ['bambi3d']);
+					//addWeek(['Defeat'], 5, ['bambiRage']);
+			    case 'mods':
+					for (i in 0...WeekData.weeksList.length) {
+						if(weekIsLocked(WeekData.weeksList[i])) continue;
+			
+						var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+						var leSongs:Array<String> = [];
+						var leChars:Array<String> = [];
+			
+						for (j in 0...leWeek.songs.length)
+						{
+							leSongs.push(leWeek.songs[j][0]);
+							leChars.push(leWeek.songs[j][1]);
+						}
+			
+						WeekData.setDirectoryFromWeek(leWeek);
+						for (song in leWeek.songs)
+						{
+							var colors:Array<Int> = song[2];
+							if(colors == null || colors.length < 3)
+							{
+								colors = [146, 113, 253];
+							}
+							addSong(song[0], i, song[1]);
+						}
+					}
+					bg.color = 0xFF4965FF;
+					WeekData.loadTheFirstEnabledMod();
+					isInMods = true;
+			}
+	}
+
+
+	public function GoToActualFreeplay()
+	{
 		final accept:String = "ACCEPT";
 		final reject:String = "BACK";
 
@@ -140,11 +281,6 @@ class FreeplayState extends MusicBeatState
 		if (!curPlaying) Conductor.changeBPM(TitleState.titleJSON.bpm);
 		#end
 
-		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.antialiasing = ClientPrefs.globalAntialiasing;
-		add(bg);
-		bg.screenCenter();
-
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 		grpIcons = new FlxTypedGroup<HealthIcon>();
@@ -152,8 +288,9 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(90, 320, songs[i].songName, true);
-			songText.isMenuItem = true;
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
+			songText.isMenuItem = false;
+			songText.itemType = "D-Shape";
 			songText.targetY = i - curSelected;
 			grpSongs.add(songText);
 
@@ -168,8 +305,8 @@ class FreeplayState extends MusicBeatState
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 			icon.sprTracker = songText;
 			icon.ID = i;
+			grpIcons.add(icon);
 
-			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);
 			add(icon);
 
@@ -181,21 +318,16 @@ class FreeplayState extends MusicBeatState
 
 		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
 		scoreText.setFormat(Paths.font("comic.ttf"), 32, FlxColor.WHITE, RIGHT);
-		scoreText.x = 20;
 
 		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 66, 0xFF000000);
 		scoreBG.alpha = 0.6;
-		scoreBG.screenCenter(X);
-		scoreBG.y = 10;
 		add(scoreBG);
 
-		diffText = new FlxText(scoreText.x -10, scoreText.y + 30, 0, "", 24);
+		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
 		diffText.font = scoreText.font;
-		diffText.x = 20;
-		diffText.y = 40;
 		add(diffText);
 
-		add(scoreText); // it should be done
+		add(scoreText);
 
 		missingTextBG = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		missingTextBG.alpha = 0.6;
@@ -266,9 +398,13 @@ class FreeplayState extends MusicBeatState
 		changeSelection();
 		changeDiff();
 
+		FlxTween.tween(scoreBG,{y: 25},0.5,{ease: FlxEase.expoInOut});
+		FlxTween.tween(scoreText,{y: 20},0.5,{ease: FlxEase.expoInOut});
+		FlxTween.tween(diffText,{y: 55},0.5,{ease: FlxEase.expoInOut});
+
 		FlxG.mouse.visible = true;
 
-		super.create();
+		var swag:Alphabet = new Alphabet(1, 0, "swag");
 	}
 
 	function checkForSongsThatMatch(?start:String = '')
@@ -360,6 +496,20 @@ class FreeplayState extends MusicBeatState
 		return (!leWeek.startUnlocked && leWeek.weekBefore.length > 0 && (!StoryMenuState.weekCompleted.exists(leWeek.weekBefore) || !StoryMenuState.weekCompleted.get(leWeek.weekBefore)));
 	}
 
+	public function UpdatePackSelection(change:Int)
+	{
+		CurrentPack += change;
+		if (CurrentPack == -1)
+		{
+			CurrentPack = AllPossibleSongs.length - 1;
+		}
+		if (CurrentPack == AllPossibleSongs.length)
+		{
+			CurrentPack = 0;
+		}
+		CurrentSongIcon.loadGraphic(Paths.image('pack/' + (AllPossibleSongs[CurrentPack].toLowerCase())));
+	}
+
 	function regenList() {
 			grpSongs.forEach(song -> {
 				grpSongs.remove(song, true);
@@ -406,9 +556,6 @@ class FreeplayState extends MusicBeatState
 	var holdTime:Float = 0;
 	override function update(elapsed:Float)
 	{
-
-		if(fart) allowinputShit = true;
-
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 
@@ -523,7 +670,7 @@ class FreeplayState extends MusicBeatState
 						colorTween.cancel();
 					}
 					FlxG.sound.play(Paths.sound('cancelMenu'));
-					FlxG.switchState(new CategoryState());
+					FlxG.switchState(MainMenuState.new);
 					FlxG.mouse.visible = false;
 				}
 			}
@@ -532,8 +679,6 @@ class FreeplayState extends MusicBeatState
 			{
 				persistentUpdate = false;
 				openSubState(new GameplayChangersSubstate());
-				allowinputShit = false;
-				fart = false;
 			}
 			else if(space)
 			{
@@ -702,9 +847,6 @@ class FreeplayState extends MusicBeatState
 							PlayState.storyDifficulty = curDifficulty;
 						}
 				PlayState.isStoryMode = ClientPrefs.alwaysTriggerCutscene;
-				PlayState.isFreeplay = true;
-				PlayState.isFreeplayPur = false;
-				PlayState.isPurStoryMode = false;
 
 				trace('CURRENT WEEK: ' + WeekData.getWeekFileName());
 				if(colorTween != null) {
@@ -738,8 +880,6 @@ class FreeplayState extends MusicBeatState
 				persistentUpdate = false;
 				openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));
 				FlxG.sound.play(Paths.sound('scrollMenu'));
-				allowinputShit = false;
-				fart = false;
 			}
 		}
 		super.update(elapsed);
@@ -854,7 +994,7 @@ class FreeplayState extends MusicBeatState
 		}
 
 		iconArray[curSelected].alpha = 1;
-		
+
 		for (i in grpIcons.members) i.alpha = (i.ID == curSelected ? 1 : 0.6);
 
 		for (item in grpSongs.members)
@@ -877,6 +1017,11 @@ class FreeplayState extends MusicBeatState
 				item.alpha = 1;
 				// item.setGraphicSize(Std.int(item.width));
 			}
+		}
+
+		changeDiff();
+		if(!isInMods) {
+	     	FlxTween.color(bg, 0.25, bg.color, songColors[songs[curSelected].week]);
 		}
 		
 		Paths.currentModDirectory = songs[curSelected].folder;
