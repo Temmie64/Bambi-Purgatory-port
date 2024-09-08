@@ -8,13 +8,28 @@ import flixel.util.FlxColor;
 
 class MenuItem extends FlxSprite
 {
+	public var targetX:Float = 0;
 	public var targetY:Float = 0;
+	public var week:FlxSprite;
 	public var flashingInt:Int = 0;
 
-	public function new(x:Float, y:Float, weekName:String = '')
+	public function new(x:Float, y:Float, weekName:String = '', weekNum:Int = 0)
 	{
 		super(x, y);
 		loadGraphic(Paths.image('storymenu/' + weekName));
+		//trace('Test added: ' + WeekData.getWeekNumber(weekNum) + ' (' + weekNum + ')');
+		antialiasing = ClientPrefs.globalAntialiasing;
+
+		super(x, y);
+		if (weekNum == 5 && !FlxG.save.data.hasPlayedMasterWeek)
+		{
+			week = loadGraphic(Paths.image('storymenu/weekquestionmark'));
+		}
+		else
+		{
+			week = loadGraphic(Paths.image('storymenu/' + weekName));
+		}
+		add(week);
 		//trace('Test added: ' + WeekData.getWeekNumber(weekNum) + ' (' + weekNum + ')');
 		antialiasing = ClientPrefs.globalAntialiasing;
 	}
@@ -35,6 +50,7 @@ class MenuItem extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		x = FlxMath.lerp(x, (targetX * 450) + 420, 0.17);
 		y = FlxMath.lerp(y, (targetY * 120) + 480, CoolUtil.boundTo(elapsed * 10.2, 0, 1));
 
 		if (isFlashing)
