@@ -420,7 +420,7 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 
-	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
+	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>, color:Int)
 	{
 		if (songCharacters == null)
 			songCharacters = ['bf'];
