@@ -426,6 +426,7 @@ class FreeplayState extends MusicBeatState
 			songCharacters = ['bf'];
 	
 		var num:Int = 0;
+	
 		for (song in songs)
 		{
 			addSong(song, weekNum, songCharacters[num]);
@@ -477,9 +478,9 @@ class FreeplayState extends MusicBeatState
 		super.closeSubState();
 	}
 
-	public function addSong(songName:String, weekNum:Int, songCharacter:String, color:Int)
+	public function addSong(songName:String, weekNum:Int, songCharacter:String)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter, color));
+		songs.push(new SongMetadata(songName, weekNum, songCharacter));
 	}
 
 	function weekIsLocked(name:String):Bool {
