@@ -63,15 +63,6 @@ class SuperSecretDebugMenu extends BaseOptionsMenu
 		option.onChange = crashDaEngine;
 		addOption(option);
 
-		var option:Option = new Option('Test Update Screen',
-			"Select this to test the engine's update screen.",
-			'updateThing',
-			'link',
-			false);
-
-		option.onChange = doDaUpdate;
-		addOption(option);
-
 		var option:Option = new Option('Rainbow FPS',
 			"If checked, allows the FPS color to be rainbow.",
 			'rainbowFPS',
