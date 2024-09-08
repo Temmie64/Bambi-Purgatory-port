@@ -1,0 +1,67 @@
+{
+	"storyName": "Your New Week",
+	"hideFreeplay": false,
+	"weekBackground": "stage",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": false,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"rsod",
+			"bombuExpunged",
+			[
+				215,
+				0,
+				0
+			]
+		],
+		[
+			"Disappointment",
+			"gary",
+			[
+				0,
+				215,
+				0
+			]
+		],
+		[
+			"Number 15",
+			"bamburg",
+			[
+				215,
+				169,
+				0
+			]
+		]
+		,
+		[
+			"Annihilation",
+			"banbodi",
+			[
+				40,
+				40,
+				40
+			]
+		],
+		[
+			"Harvested",
+			"bambi",
+			[
+				0,
+				215,
+				0
+			]
+		]
+	],
+	"weekName": "Custom Week"
+}

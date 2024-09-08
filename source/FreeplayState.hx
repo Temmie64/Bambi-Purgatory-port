@@ -67,6 +67,7 @@ class FreeplayState extends MusicBeatState
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var grpIcons:FlxTypedGroup<HealthIcon>;
+	private var iconArray:Array<HealthIcon> = [];
 	public static var curPlaying:Bool = false;
 	private var curChar:String = "unknown";
 
@@ -83,7 +84,11 @@ class FreeplayState extends MusicBeatState
 		
 		persistentUpdate = true;
 		PlayState.isStoryMode = false;
-		WeekData.reloadWeekFiles(false);
+		WeekData.reloadCustomWeekFiles(CategoryState.categorySelected, false); //this will load the category songs !111
+		if (CategoryState.categorySelected == null)
+		{
+			WeekData.reloadWeekFiles(false);
+		}
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -162,7 +167,10 @@ class FreeplayState extends MusicBeatState
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 			icon.sprTracker = songText;
 			icon.ID = i;
-			grpIcons.add(icon);
+
+			// using a FlxGroup is too much fuss!
+			iconArray.push(icon);
+			add(icon);
 
 			// songText.x += 40;
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
@@ -171,17 +179,22 @@ class FreeplayState extends MusicBeatState
 		WeekData.setDirectoryFromWeek();
 
 		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
-		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
+		scoreText.setFormat(Paths.font("comic.ttf"), 32, FlxColor.WHITE, RIGHT);
+		scoreText.x = 20;
 
 		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 66, 0xFF000000);
 		scoreBG.alpha = 0.6;
+		scoreBG.screenCenter(X);
+		scoreBG.y = 10;
 		add(scoreBG);
 
-		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
+		diffText = new FlxText(scoreText.x -10, scoreText.y + 30, 0, "", 24);
 		diffText.font = scoreText.font;
+		diffText.x = 20;
+		diffText.y = 40;
 		add(diffText);
 
-		add(scoreText);
+		add(scoreText); // it should be done
 
 		missingTextBG = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		missingTextBG.alpha = 0.6;
@@ -189,7 +202,7 @@ class FreeplayState extends MusicBeatState
 		add(missingTextBG);
 		
 		missingText = new FlxText(50, 0, FlxG.width - 100, '', 24);
-		missingText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		missingText.setFormat(Paths.font("comic.ttf"), 24, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		missingText.scrollFactor.set();
 		missingText.visible = false;
 		add(missingText);
@@ -225,7 +238,7 @@ class FreeplayState extends MusicBeatState
 		#end
 		bottomString = leText;
 		bottomText = new FlxText(bottomBG.x, bottomBG.y + 4, FlxG.width, leText, size);
-		bottomText.setFormat(Paths.font("vcr.ttf"), size, FlxColor.WHITE, CENTER);
+		bottomText.setFormat(Paths.font("comic.ttf"), size, FlxColor.WHITE, CENTER);
 		bottomText.scrollFactor.set();
 		add(bottomText);
 
@@ -238,12 +251,12 @@ class FreeplayState extends MusicBeatState
 		});
 		buttonTop.setGraphicSize(Std.int(songSearchText.width), 50);
 		buttonTop.updateHitbox();
-		buttonTop.label.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT);
+		buttonTop.label.setFormat(Paths.font("comic.ttf"), 24, FlxColor.BLACK, RIGHT);
 		buttonTop.x = FlxG.width - buttonTop.width;
 		add(buttonTop);
 
 		searchText = new FlxText(975, 110, 100, "Search", 24);
-		searchText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK);
+		searchText.setFormat(Paths.font("comic.ttf"), 24, FlxColor.BLACK);
 		add(searchText);
 
 		player = new MusicPlayer(this);
@@ -255,6 +268,12 @@ class FreeplayState extends MusicBeatState
 		FlxG.mouse.visible = true;
 
 		super.create();
+	}
+
+	override function closeSubState() {
+		changeSelection(0, false);
+		persistentUpdate = true;
+		super.closeSubState();
 	}
 
 	function checkForSongsThatMatch(?start:String = '')
@@ -392,6 +411,7 @@ class FreeplayState extends MusicBeatState
 	var holdTime:Float = 0;
 	override function update(elapsed:Float)
 	{
+
 		if(fart) allowinputShit = true;
 
 		if (FlxG.sound.music != null)
@@ -508,7 +528,7 @@ class FreeplayState extends MusicBeatState
 						colorTween.cancel();
 					}
 					FlxG.sound.play(Paths.sound('cancelMenu'));
-					FlxG.switchState(MainMenuState.new);
+					FlxG.switchState(CategoryState.new);
 					FlxG.mouse.visible = false;
 				}
 			}
@@ -730,6 +750,14 @@ class FreeplayState extends MusicBeatState
 		super.update(elapsed);
 	}
 
+	public static function destroyFreeplayVocals() {
+		if(vocals != null) {
+			vocals.stop();
+			vocals.destroy();
+		}
+		vocals = null;
+	}
+
 	function getVocalFromCharacter(char:String)
 	{
 		try
@@ -833,6 +861,13 @@ class FreeplayState extends MusicBeatState
 
 		var bullShit:Int = 0;
 
+		for (i in 0...iconArray.length)
+		{
+			iconArray[i].alpha = 0.6;
+		}
+
+		iconArray[curSelected].alpha = 1;
+		
 		for (i in grpIcons.members) i.alpha = (i.ID == curSelected ? 1 : 0.6);
 
 		for (item in grpSongs.members)
