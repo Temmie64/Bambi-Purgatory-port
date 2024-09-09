@@ -15,9 +15,6 @@ import flixel.system.FlxSound;
 import flixel.util.FlxStringUtil;
 import openfl.utils.Assets as OpenFlAssets;
 import lime.utils.Assets;
-#if desktop
-import Discord.DiscordClient;
-#end
 using StringTools;
 
 class FreeplayState extends MusicBeatState
@@ -333,7 +330,7 @@ class FreeplayState extends MusicBeatState
 			if (controls.BACK)
 			{
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new MainMenuState());
+				FlxG.switchState(new MainMenuState());
 			}
 		
 			return;
@@ -376,7 +373,7 @@ class FreeplayState extends MusicBeatState
 		if (controls.BACK && allowinputShit)
 			{
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new FreeplayState());
+				FlxG.switchState(new FreeplayState());
 	
 			if (accepted && allowinputShit)
 			{
@@ -449,9 +446,9 @@ class FreeplayState extends MusicBeatState
 
 		PlayState.storyWeek = songs[curSelected].week;
 		trace('CURRENT WEEK: ' + WeekData.getWeekFileName());
-		CharacterSelectionState.characterFile = 'bf';
-		CharacterSelectionState.scoreMultipliers = [1, 1, 1, 1];
-		LoadingState.loadAndSwitchState(new CharacterSelectionState());
+		//CharacterSelectionState.characterFile = 'bf';
+		//CharacterSelectionState.scoreMultipliers = [1, 1, 1, 1];
+		//LoadingState.loadAndSwitchState(new CharacterSelectionState());
 
 		FlxG.sound.music.volume = 0;
 				
@@ -477,19 +474,15 @@ public static function destroyFreeplayVocals() {
 
 	function changeDiff(change:Int = 0)
 	{
+		if (player.playingMusic) return;
+
 		curDifficulty += change;
 
 		if (curDifficulty < 0)
-			curDifficulty = 2;
-		if (curDifficulty > 2)
+			curDifficulty = CoolUtil.difficulties.length-1;
+		if (curDifficulty >= CoolUtil.difficulties.length)
 			curDifficulty = 0;
-		
-		if(!isInMods) {
-	     	if (songs[curSelected].week == 12)
-			{
-				curDifficulty = 3;
-			}
-		}
+
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		intendedRating = Highscore.getRating(songs[curSelected].songName, curDifficulty);
@@ -497,6 +490,7 @@ public static function destroyFreeplayVocals() {
 	
 		PlayState.storyDifficulty = curDifficulty;
 		diffText.text = '< ' + CoolUtil.difficultyString() + ' >';
+		positionHighscore();
 	}
 
 	function changeSelection(change:Int = 0)

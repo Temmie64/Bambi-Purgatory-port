@@ -140,6 +140,7 @@ class PlayState extends MusicBeatState
 	public static var isPurStoryMode:Bool = false;
 	public static var isFreeplayPur:Bool = false;
 	public static var isFreeplay:Bool = false;
+	public static var isModded:Bool = false;
 
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
