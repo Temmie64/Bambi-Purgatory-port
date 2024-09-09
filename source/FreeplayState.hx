@@ -392,7 +392,7 @@ class FreeplayState extends MusicBeatState
 				PlayState.storyDifficulty = curDifficulty;
 			
 				PlayState.storyWeek = songs[curSelected].week;
-				LoadingState.loadAndSwitchState(new CharacterSelectState());
+				LoadingState.loadAndSwitchState(PlayState.new);
 			}
 		}
 		if(ctrl)
@@ -474,7 +474,7 @@ public static function destroyFreeplayVocals() {
 
 	function changeDiff(change:Int = 0)
 	{
-		if (player.playingMusic) return;
+		//if (player.playingMusic) return;
 
 		curDifficulty += change;
 
@@ -490,7 +490,6 @@ public static function destroyFreeplayVocals() {
 	
 		PlayState.storyDifficulty = curDifficulty;
 		diffText.text = '< ' + CoolUtil.difficultyString() + ' >';
-		positionHighscore();
 	}
 
 	function changeSelection(change:Int = 0)
