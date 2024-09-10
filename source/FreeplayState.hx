@@ -439,8 +439,9 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 
-	var instPlaying:Int = -1;
-	private static var vocals:FlxSound = null;
+	public static var instPlaying:Int = -1;
+	public static var vocals:FlxSound = null;
+	public static var opponentVocals:FlxSound = null;
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -449,6 +450,7 @@ class FreeplayState extends MusicBeatState
 
 		if (!InMainFreeplayState) 
 		{
+			FlxG.sound.music.volume += 0.7 * FlxG.elapsed;
 			if (controls.UI_LEFT_P)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -472,7 +474,7 @@ class FreeplayState extends MusicBeatState
 					loadingPack = false;
 				});
 			}
-			if (controls.BACK)
+			if (controls.BACK && allowinputShit)
 			{
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				MusicBeatState.switchState(new MainMenuState());
@@ -494,26 +496,100 @@ class FreeplayState extends MusicBeatState
 		if (Math.abs(lerpRating - intendedRating) <= 0.01)
 			lerpRating = intendedRating;
 
-		scoreText.text = 'PERSONAL BEST: ' + lerpScore + ' (' + Math.floor(lerpRating * 100) + '%)';
+		var ratingSplit:Array<String> = Std.string(Highscore.floorDecimal(lerpRating * 100, 2)).split('.');
+		if(ratingSplit.length < 2) { //No decimals, add an empty space
+			ratingSplit.push('');
+		}
+
+		while(ratingSplit[1].length < 2) { //Less than 2 decimals in it, add decimals then
+			ratingSplit[1] += '0';
+		}
+
+		scoreText.text = 'PERSONAL BEST: ' + lerpScore + ' (' + ratingSplit.join('.') + '%)';
+		positionHighscore();
 
 		var upP = controls.UI_UP_P;
 		var downP = controls.UI_DOWN_P;
 		var accepted = controls.ACCEPT;
-		var space = FlxG.keys.justPressed.SPACE #if android || _virtualpad.buttonX.justPressed #end;
-		var ctrl = FlxG.keys.justPressed.CONTROL #if android || _virtualpad.buttonC.justPressed #end;
+		var space = FlxG.keys.justPressed.SPACE;
+		var ctrl = FlxG.keys.justPressed.CONTROL;
 
-		if (upP && allowinputShit)
+		var shiftMult:Int = 1;
+		if (FlxG.keys.pressed.SHIFT) shiftMult = 3;
+
+		if (!songSearchText.hasFocus)
 		{
-			changeSelection(-1);
+			if (!player.playingMusic)
+			{
+				if(songs.length > 1)
+				{
+					if (upP && allowinputShit)
+					{
+						changeSelection(-shiftMult);
+						holdTime = 0;
+					}
+					if (downP && allowinputShit)
+					{
+						changeSelection(shiftMult);
+						holdTime = 0;
+					}
+	
+					if(controls.UI_RIGHT_P && allowinputShit || controls.controls.UI_LEFT_P && allowinputShit)
+					{
+						var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
+						holdTime += elapsed;
+						var checkNewHold:Int = Math.floor((holdTime - 0.5) * 10);
+						if(holdTime > 0.5 && checkNewHold - checkLastHold > 0)
+						{
+							changeSelection((checkNewHold - checkLastHold) * (controls.UI_UP ? -shiftMult : shiftMult));
+							changeDiff();
+						}
+					}
+	
+					if(FlxG.mouse.wheel != 0)
+					{
+						FlxG.sound.play(Paths.sound('scrollMenu'), 0.2);
+						changeSelection(-shiftMult * FlxG.mouse.wheel, false);
+						changeDiff();
+					}
+				}
+		
+				if (controls.UI_LEFT_P)
+					changeDiff(-1);
+				else if (controls.UI_RIGHT_P)
+					changeDiff(1);
+				else if (upP || downP) changeDiff();
+			}
+	
+	
+			if (controls.BACK && allowinputShit)
+			{
+				curPlaying = false;
+				if (player.playingMusic)
+				{
+					FlxG.sound.music.stop();
+					destroyFreeplayVocals();
+						FlxG.sound.music.volume = 0;
+					instPlaying = -1;
+	
+					player.playingMusic = false;
+					player.switchPlayMusic();
+	
+					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic), 0);
+					FlxTween.tween(FlxG.sound.music, {volume: 1}, 1);
+				}
+				else 
+				{
+					persistentUpdate = false;
+					if(colorTween != null) {
+						colorTween.cancel();
+					}
+					FlxG.sound.play(Paths.sound('cancelMenu'));
+					FlxG.switchState(MainMenuState.new);
+					FlxG.mouse.visible = false;
+				}
+			}
 		}
-		if (downP && allowinputShit)
-		{
-			changeSelection(1);
-		}
-		if (controls.UI_LEFT_P && allowinputShit)
-			changeDiff(-1);
-		if (controls.UI_RIGHT_P && allowinputShit)
-			changeDiff(1);
 
 		if (controls.BACK && allowinputShit)
 			{
@@ -540,7 +616,8 @@ class FreeplayState extends MusicBeatState
 				LoadingState.loadAndSwitchState(new CharacterSelectState());
 			}
 		}
-		if(ctrl)
+
+		if(ctrl && !player.playingMusic)
 		{
 			openSubState(new GameplayChangersSubstate());
 			allowinputShit = false;
