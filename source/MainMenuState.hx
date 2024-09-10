@@ -23,7 +23,7 @@ using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
-	public static var psychEngineJSVersion:String = '1.33.3'; //This is also used for Discord RPC
+	public static var psychEngineJSVersion:String = '1.33.0'; //This is also used for Discord RPC
 	public static var psychEngineVersion:String = '0.6.3'; //This is also used for Discord RPC
 	public static var curModVer:String = '2.0 Prototype'; //This is also used for yo maama aaa
 	public static var curSelected:Int = 0;
@@ -58,13 +58,13 @@ class MainMenuState extends MusicBeatState
 
 	public static var bgPaths:Array<String> = 
 	[
-		'SUSSUS AMOGUS',
-		'SwagnotrllyTheMod',
-		'Olyantwo',
-		'morie',
-		'mantis',
-		'mamakotomi',
-		'T5mpler'
+		'backgrounds/SUSSUS AMOGUS',
+		'backgrounds/SwagnotrllyTheMod',
+		'backgrounds/Olyantwo',
+		'backgrounds/morie',
+		'backgrounds/mantis',
+		'backgrounds/mamakotomi',
+		'backgrounds/T5mpler'
 	];
 
 	override function create()
@@ -174,7 +174,7 @@ class MainMenuState extends MusicBeatState
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("Comic Sans MS Bold", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
-		var versionShit:FlxText = new FlxText(12, FlxG.height - 24, 0, daRealEngineVer + " Engine v" + curModVer + " | Vs Dave And Bambi 3.0b", 12);
+		var versionShit:FlxText = new FlxText(12, FlxG.height - 24, 0, curModVer + ' ' + daRealEngineVer + " Engine, Vs Dave And Bambi 3.0b", 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("Comic Sans MS Bold", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
@@ -411,4 +411,18 @@ class MainMenuState extends MusicBeatState
 		var chance:Int = FlxG.random.int(0, bgPaths.length - 1);
 		return Paths.image('backgrounds/${bgPaths[chance]}');
 	}
+
+	/*public static function randomizeBG():flixel.system.FlxAssets.FlxGraphicAsset
+	{
+		var date = Date.now();
+		var chance:Int = FlxG.random.int(0, bgPaths.length - 1);
+		if(date.getMonth() == 3 && date.getDate() == 1)
+		{
+			return Paths.image('backgrounds/ramzgaming');
+		}
+		else
+		{
+			return Paths.image('backgrounds/${bgPaths[chance]}');
+		}
+	}*/
 }

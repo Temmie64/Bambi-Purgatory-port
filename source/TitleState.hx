@@ -104,6 +104,41 @@ class TitleState extends MusicBeatState
 		swagShader = new ColorSwap();
 		super.create();
 
+		#if (CHECK_FOR_UPDATES)
+		if(ClientPrefs.checkForUpdates && !closedState && !Main.askedToUpdate) {
+			trace('checking for update');
+			var http = new haxe.Http("https://raw.githubusercontent.com/JordanSantiagoYT/FNF-JS-Engine/main/THECHANGELOG.md");
+			var returnedData:Array<String> = [];
+
+			http.onData = function (data:String)
+			{
+    				var versionEndIndex:Int = data.indexOf(';');
+    				returnedData[0] = data.substring(0, versionEndIndex);
+
+    				// Extract the changelog after the version number
+    				returnedData[1] = data.substring(versionEndIndex + 1, data.length);
+				updateVersion = returnedData[0];
+				var curVersion:String = MainMenuState.psychEngineJSVersion.trim();
+				trace('version online: ' + updateVersion + ', your version: ' + curVersion);
+				if(updateVersion != curVersion) {
+					trace('versions arent matching!');
+					OutdatedState.currChanges = returnedData[1];
+					mustUpdate = true;
+					Main.askedToUpdate = true;
+				}
+				if(updateVersion == curVersion) {
+					trace('the versions match!');
+				}
+			}
+
+			http.onError = function (error) {
+				trace('error: $error');
+			}
+
+			http.request();
+		}
+		#end
+
 		Highscore.load();
 
 		// IGNORE THIS!!!
@@ -374,12 +409,6 @@ class TitleState extends MusicBeatState
 			titleTimer += CoolUtil.boundTo(elapsed, 0, 1);
 			if (titleTimer > 2) titleTimer -= 2;
 		}
-
-		// for testing purposes
-		/*
-		if (FlxG.keys.checkStatus(FlxKey.SEVEN, JUST_PRESSED))
-			throw 'Crash test';
-		*/
 
 		// EASTER EGG
 

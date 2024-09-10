@@ -52,28 +52,21 @@ class StoryMenuState extends MusicBeatState
 
 		PlayState.isStoryMode = true;
 		WeekData.reloadWeekFiles(true);
-
-		final accept:String = "ACCEPT";
-		final reject:String = "BACK";
-		if(WeekData.weeksList.length < 1)
-		{
-			FlxTransitionableState.skipNextTransIn = true;
-			persistentUpdate = false;
-			var msg:String = "NO WEEKS ADDED FOR STORY MODE\n\nPress " + accept + " to go to the Week Editor Menu.\nPress " + reject + " to return to Main Menu.";
-			FlxG.switchState(new ErrorState(msg,
-				function() FlxG.switchState(new editors.WeekEditorState()),
-				function() FlxG.switchState(new MainMenuState())));
-			return;
-		}
 		if(curWeek >= WeekData.weeksList.length) curWeek = 0;
 		persistentUpdate = persistentDraw = true;
 
-		scoreText = new FlxText(10, 10, 0, "SCORE: 0", 36);
+		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
 		scoreText.setFormat("VCR OSD Mono", 32);
 
 		txtWeekTitle = new FlxText(FlxG.width * 0.7, 10, 0, "", 32);
 		txtWeekTitle.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
 		txtWeekTitle.alpha = 0.7;
+
+		var rankText:FlxText = new FlxText(0, 10);
+		rankText.text = 'RANK: GREAT';
+		rankText.setFormat(Paths.font("vcr.ttf"), 32);
+		rankText.size = scoreText.size;
+		rankText.screenCenter(X);
 
 		var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
 		var bgYellow:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 386, 0xFFF9CF51);
@@ -177,9 +170,11 @@ class StoryMenuState extends MusicBeatState
 		add(tracksSprite);
 
 		txtTracklist = new FlxText(FlxG.width * 0.05, tracksSprite.y + 60, 0, "", 32);
-		txtTracklist.font = Paths.font("comic.ttf");
+		txtTracklist.alignment = CENTER;
+		txtTracklist.font = rankText.font;
 		txtTracklist.color = 0xFFe55777;
 		add(txtTracklist);
+		// add(rankText);
 		add(scoreText);
 		add(txtWeekTitle);
 
@@ -197,18 +192,6 @@ class StoryMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if(grpWeekText != null && grpWeekText.length < 1)
-		{
-			if (controls.BACK && !movedBack && !selectedWeek)
-			{
-				FlxG.sound.play(Paths.sound('cancelMenu'));
-				movedBack = true;
-				FlxG.switchState(MainMenuState.new);
-			}
-			super.update(elapsed);
-			return;
-		}
-
 		// scoreText.setFormat('VCR OSD Mono', 32);
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, CoolUtil.boundTo(elapsed * 30, 0, 1)));
 		if(Math.abs(intendedScore - lerpScore) < 10) lerpScore = intendedScore;

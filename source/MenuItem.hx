@@ -3,15 +3,12 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 
 class MenuItem extends FlxSprite
 {
-	public var targetX:Float = 0;
 	public var targetY:Float = 0;
-	public var week:FlxSprite;
 	public var flashingInt:Int = 0;
 
 	public function new(x:Float, y:Float, weekName:String = '')
@@ -38,7 +35,6 @@ class MenuItem extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		x = FlxMath.lerp(x, (targetX * 450) + 420, 0.17);
 		y = FlxMath.lerp(y, (targetY * 120) + 480, CoolUtil.boundTo(elapsed * 10.2, 0, 1));
 
 		if (isFlashing)

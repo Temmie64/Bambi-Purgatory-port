@@ -162,7 +162,7 @@ class Paths
 	{
 		var path:String = Paths.getSharedPath('images/' + skin + '.txt');
 		if (!FileSystem.exists(path)) path = Paths.modsTxt(skin);
-		if (!FileSystem.exists(path)) path = Paths.getSharedPath('images/noteSplashes/noteSplashes' + NoteSplash.getSplashSkinPostfix() + '.txt');
+		if (!FileSystem.exists(path)) path = Paths.getSharedPath('images/noteSplashes/noteSplashes' + NoteSplash.getSplashSkinPostfix());
 		var configFile:Array<String> = CoolUtil.coolTextFile(path);
 
 		if (configFile.length < 1) return null;

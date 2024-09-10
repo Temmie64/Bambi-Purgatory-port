@@ -63,6 +63,15 @@ class SuperSecretDebugMenu extends BaseOptionsMenu
 		option.onChange = crashDaEngine;
 		addOption(option);
 
+		var option:Option = new Option('Test Update Screen',
+			"Select this to test the engine's update screen.",
+			'updateThing',
+			'link',
+			false);
+
+		option.onChange = doDaUpdate;
+		addOption(option);
+
 		var option:Option = new Option('Rainbow FPS',
 			"If checked, allows the FPS color to be rainbow.",
 			'rainbowFPS',
@@ -111,5 +120,32 @@ class SuperSecretDebugMenu extends BaseOptionsMenu
     }
     
     nextMessage();
+	}
+	function doDaUpdate():Void {
+		if(ClientPrefs.checkForUpdates) {
+			trace('checking for update');
+			var http = new haxe.Http("https://raw.githubusercontent.com/JordanSantiagoYT/FNF-JS-Engine/main/THECHANGELOG.md");
+			var returnedData:Array<String> = [];
+
+			http.onData = function (data:String)
+			{
+    				var versionEndIndex:Int = data.indexOf(';');
+    				returnedData[0] = data.substring(0, versionEndIndex);
+
+    				// Extract the changelog after the version number
+    				returnedData[1] = data.substring(versionEndIndex + 1, data.length);
+				TitleState.updateVersion = returnedData[0];
+				var curVersion:String = MainMenuState.psychEngineJSVersion.trim();
+					OutdatedState.currChanges = returnedData[1];
+			}
+
+			http.onError = function (error) {
+				trace('error: $error');
+			}
+
+			http.request();
+		}
+    
+    		FlxG.switchState(OutdatedState.new);
 	}
 }
