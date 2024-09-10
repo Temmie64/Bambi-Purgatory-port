@@ -4279,7 +4279,7 @@ class PlayState extends MusicBeatState
 			persistentUpdate = false;
 			paused = true;
 			cancelMusicFadeTween();
-			CustomFadeTransition.nextCamera = camOther;
+			//CustomFadeTransition.nextCamera = camOther;
 			FlxG.switchState(new CheaterState());
 		
 			#if desktop
@@ -5534,10 +5534,10 @@ class PlayState extends MusicBeatState
 				if (storyPlaylist.length <= 0)
 				{
 					cancelMusicFadeTween();
-					CustomFadeTransition.nextCamera = camOther;
+					/*CustomFadeTransition.nextCamera = camOther;
 					if(FlxTransitionableState.skipNextTransIn) {
 						CustomFadeTransition.nextCamera = null;
-					}
+					}*/
 
 					WeekData.loadTheFirstEnabledMod();
 					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
@@ -5634,10 +5634,10 @@ class PlayState extends MusicBeatState
 			{
 				trace('WENT BACK TO FREEPLAY??');
 				cancelMusicFadeTween();
-				CustomFadeTransition.nextCamera = camOther;
+				/*CustomFadeTransition.nextCamera = camOther;
 				if(FlxTransitionableState.skipNextTransIn) {
 					CustomFadeTransition.nextCamera = null;
-				}
+				}*/
 				WeekData.loadTheFirstEnabledMod();
 				#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 				if (!ffmpegMode) FlxG.switchState(new FreeplayState());
