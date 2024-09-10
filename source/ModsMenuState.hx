@@ -34,7 +34,7 @@ class ModsMenuState extends MusicBeatState
 {
 	var mods:Array<ModMetadata> = [];
 	static var changedAThing = false;
-	var bg:FlxSprite;
+	var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('backgrounds/SUSSUS AMOGUS'));
 	var intendedColor:Int;
 	var colorTween:FlxTween;
 
@@ -72,8 +72,9 @@ class ModsMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.loadGraphic(MainMenuState.randomizeBG());
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
+		bg.color = 0xFF665AFF;
 		add(bg);
 		bg.screenCenter();
 

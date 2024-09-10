@@ -40,6 +40,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 	private var boyfriend:Character = null;
 	private var descBox:FlxSprite;
 	private var descText:FlxText;
+	var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('backgrounds/SUSSUS AMOGUS'));
 
 	var optionSearchText:FlxUIInputText;
 	var searchText:FlxText;
@@ -58,10 +59,10 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		DiscordClient.changePresence(rpcTitle, null);
 		#end
 		
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.loadGraphic(MainMenuState.randomizeBG());
 		bg.color = 0xFFea71fd;
-		bg.screenCenter();
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
+		bg.screenCenter();
 		add(bg);
 
 		// avoids lagspikes while scrolling through menus!

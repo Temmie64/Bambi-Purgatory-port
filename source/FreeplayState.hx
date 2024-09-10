@@ -55,7 +55,7 @@ class FreeplayState extends MusicBeatState
 
 	var lerpSelected:Float = 0;
 
-	var bg:FlxSprite;
+	var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('backgrounds/SUSSUS AMOGUS'));
 	var intendedColor:Int;
 	var colorTween:FlxTween;
 	var missingTextBG:FlxSprite;
@@ -134,7 +134,7 @@ class FreeplayState extends MusicBeatState
 		if (!curPlaying) Conductor.changeBPM(TitleState.titleJSON.bpm);
 		#end
 
-		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.loadGraphic(MainMenuState.randomizeBG());
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 		bg.screenCenter();
