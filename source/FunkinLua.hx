@@ -2876,6 +2876,28 @@ class FunkinLua {
 			return list;
 		});
 
+		Lua_helper.add_callback(lua, "changeCursor", function(path:String, visible:Bool = true, ?loadDefault:Bool = false, scale:Float = 1, xOffset:Int = 0, yOffset:Int = 0) {
+			if (Paths.image(path) != null){
+				FlxG.mouse.visible = visible;
+				FlxG.mouse.unload();
+				FlxG.mouse.load(Paths.image(path).bitmap, scale, xOffset, yOffset);
+				luaTrace('Changed Cursor in $path');
+			}
+			else if (loadDefault || path == null || path.length <= 0)
+			{
+				FlxG.mouse.unload();
+				FlxG.mouse.visible = visible;
+				luaTrace('Loading default cursor');
+			}
+			else
+			{
+				luaTrace('Cursor in $path does not exist!', true, false, FlxColor.RED);
+				FlxG.mouse.unload();
+				FlxG.mouse.visible = visible;
+				// return;
+			}
+		});
+
 		call('onCreate', []);
 		#end
 	}

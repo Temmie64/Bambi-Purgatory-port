@@ -59,12 +59,21 @@ class CrashHandler
 
 		path = "crash/" + "JSEngine_" + dateNow + ".log";
 
-		for (stackItem in stack) {
-			switch (stackItem) {
-				case FilePos(s, file, line, column):
-					stackLabelArr.push(file + " (Line " + line + ")");
-				default:
-					Sys.println(stackItem);
+		for(stackItem in stack) {
+			switch(stackItem) {
+				case CFunction: stackLabelArr.push("Non-Haxe (C) Function");
+				case Module(c): stackLabelArr.push('Module ${c}');
+				case FilePos(parent, file, line, col):
+					switch(parent) {
+						case Method(cla, func):
+							stackLabelArr.push('${file.replace('.hx', '')}.$func() [line $line]');
+						case _:
+							stackLabelArr.push('${file.replace('.hx', '')} [line $line]');
+					}
+				case LocalFunction(v):
+					stackLabelArr.push('Local Function ${v}');
+				case Method(cl, m):
+					stackLabelArr.push('${cl} - ${m}');
 			}
 		}
 		stackLabel = stackLabelArr.join('\r\n');

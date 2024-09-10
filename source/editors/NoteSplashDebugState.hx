@@ -351,7 +351,7 @@ class NoteSplashDebugState extends MusicBeatState
 			curLen = config.offsets.length;
 		}
 
-		var strToSave = config.anim + '\n' + config.minFps + ' ' + config.maxFps + '\n' + curSelected;
+		var strToSave = config.anim + '\n' + config.minFps + ' ' + config.maxFps;
 		for (offGroup in config.offsets)
 			strToSave += '\n' + offGroup[0] + ' ' + offGroup[1];
 
