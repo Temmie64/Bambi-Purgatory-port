@@ -161,15 +161,15 @@ class FreeplayState extends MusicBeatState
 				addWeek(['Old-Splitathon'], 12, ['Splitathon']);
 			case 'joke':
                    addWeek(['Supernovae', 'Glitch', 'Vs-Dave-Thanksgiving', 'vs-dave-christmas'], 3, ['bambiJoke']);
-				addWeek(['Master', 'Mastered'], 3, ['bambi-joke-mad']);
-				#if !debug
-				if (FlxG.save.data.cheatingFound)
-				#end
+				   addWeek(['Master', 'Mastered'], 3, ['bambi-joke-mad']);
+				   #if !debug
+				   if (FlxG.save.data.cheatingFound)
+				   #end
 					addWeek(['Cheating'], 3, ['bambi3d']);
 					addWeek(['Cheating B-Side'], 3, ['bambi3d']);
-				#if !debug
-				if (FlxG.save.data.unfairnessFound)
-				#end
+				    #if !debug
+				    if (FlxG.save.data.unfairnessFound)
+				    #end
 					addWeek(['Unfairness'], 5, ['bambi3dUnfair']);
 					addWeek(['Exploitation'], 5, ['expunged']);
 			case 'extrasandfanmades':
@@ -407,6 +407,21 @@ class FreeplayState extends MusicBeatState
 		changeSelection(0, false);
 		persistentUpdate = true;
 		super.closeSubState();
+	}
+
+	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
+	{
+		if (songCharacters == null)
+			songCharacters = ['bf'];
+	
+		var num:Int = 0;
+		for (song in songs)
+		{
+			addSong(song, weekNum, songCharacters[num]);
+	
+			if (songCharacters.length != 1)
+				num++;
+		}
 	}
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String, color:Int)
