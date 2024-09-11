@@ -35,11 +35,7 @@ class FreeplayState extends MusicBeatState
 	private static var curSelected:Int = 0;
 	var curDifficulty:Int = -1;
 	private static var lastDifficultyName:String = '';
-
 	var selector:FlxText;
-	var curSelected:Int = 0;
-	var curDifficulty:Int = 1;
-
 	var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('backgrounds/SUSSUS AMOGUS'));
 
 	var scoreBG:FlxSprite;
@@ -56,7 +52,6 @@ class FreeplayState extends MusicBeatState
 	var bottomString:String;
 	var bottomText:FlxText;
 	var bottomBG:FlxSprite;
-
 	var lerpSelected:Float = 0;
 
 	var intendedColor:Int;
@@ -551,6 +546,7 @@ class FreeplayState extends MusicBeatState
 	public static var instPlaying:Int = -1;
 	public static var vocals:FlxSound = null;
 	public static var opponentVocals:FlxSound = null;
+	var holdTime:Float = 0;
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -703,7 +699,7 @@ class FreeplayState extends MusicBeatState
 		if (controls.BACK && allowinputShit)
 			{
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new FreeplayState());
+				FlxG.switchState(new FreeplayState());
 	
 			if (accepted && allowinputShit)
 			{
@@ -925,13 +921,15 @@ class SongMetadata
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
+	public var color:Int = -7179779;
 	public var folder:String = "";
 
-	public function new(song:String, week:Int, songCharacter:String)
+	public function new(song:String, week:Int, songCharacter:String, color:Int)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
+		this.color = color;
 		this.folder = Paths.currentModDirectory;
 		if(this.folder == null) this.folder = '';
 	}
