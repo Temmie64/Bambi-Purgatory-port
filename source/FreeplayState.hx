@@ -72,6 +72,33 @@ class FreeplayState extends MusicBeatState
 
 	public static var fart:Bool = false;
 	public var allowinputShit:Bool = true;
+	private var InMainFreeplayState:Bool = false;
+
+	private var CurrentSongIcon:FlxSprite;
+
+	private var AllPossibleSongs:Array<String> = ["dave", "old", "extrasandfanmades", "joke", "mods"];
+
+	private var CurrentPack:Int = 0;
+
+	var loadingPack:Bool = false;
+
+	var songColors:Array<FlxColor> = [
+		0xFF000000, // DUMBASS PLACEHOLDER
+		0xFF4965FF, // DAVE
+		0xFFDC97AA, // ANGEY ANGER
+		0xFF00B515, // MISTER BAMBI
+		0xFF4965FF, // fdfdfd
+		0xFFA40B09, // EVIL UNFAIRNESSSSS
+		0xFFFF0030, // 3d dave og color scary (sharted)
+		0xFF4965FF, // fdfdfd
+		0xFF4965FF, // fdfdfd
+		0xFF4965FF, // fdfdfd
+		0xFF4965FF, // fdfdfd
+		0xFF4965FF, // fdfdfd
+		0xFF00FFFF, // SPLIT THE THONNNNN 12
+    ];
+
+	private var iconArray:Array<HealthIcon> = [];
 
 	override function create()
 	{
@@ -104,41 +131,89 @@ class FreeplayState extends MusicBeatState
 			return;
 		}
 
-		for (i in 0...WeekData.weeksList.length) {
-			if(weekIsLocked(WeekData.weeksList[i])) continue;
-
-			var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-			var leSongs:Array<String> = [];
-			var leChars:Array<String> = [];
-
-			for (j in 0...leWeek.songs.length)
-			{
-				leSongs.push(leWeek.songs[j][0]);
-				leChars.push(leWeek.songs[j][1]);
-			}
-
-			WeekData.setDirectoryFromWeek(leWeek);
-			for (song in leWeek.songs)
-			{
-				var colors:Array<Int> = song[2];
-				if(colors == null || colors.length < 3)
-				{
-					colors = [146, 113, 253];
-				}
-				addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
-			}
-		}
-		WeekData.loadTheFirstEnabledMod();
-
 		#if PRELOAD_ALL
 		if (!curPlaying) Conductor.changeBPM(TitleState.titleJSON.bpm);
 		#end
 
 		bg.loadGraphic(MainMenuState.randomizeBG());
+		bg.color = 0xFF4965FF;
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 		bg.screenCenter();
 
+		super.create();
+	}
+
+	public function LoadProperPack()
+	{
+		switch (AllPossibleSongs[CurrentPack].toLowerCase())
+		{
+			case 'dave':
+				addWeek(['House', 'Insanity'], 1, ['dave']);
+				addWeek(['Polygonized'], 2,['dave3d']);
+				addWeek(['Bonus-Song'], 1,['dave']);
+				addWeek(['Blocked','Corn-Theft','Maze',], 3, ['bambi']);
+				addWeek(['Splitathon'], 12,['splitathon']);
+			case 'old':
+				addWeek(['Old-House', 'Old-Insanity'], 1, ['daveOld']);
+				addWeek(['Old-Furiosity'], 2,['davesharted']);
+				addWeek(['Old-Blocked', 'Old-Corn-Theft', 'beta-maze', 'Old-Maze'], 3, ['bamberfunny']);
+				addWeek(['Old-Splitathon'], 12, ['Splitathon']);
+			case 'joke':
+                   addWeek(['Supernovae', 'Glitch', 'Vs-Dave-Thanksgiving', 'vs-dave-christmas'], 3, ['bambiJoke']);
+				addWeek(['Master', 'Mastered'], 3, ['bambi-joke-mad']);
+				#if !debug
+				if (FlxG.save.data.cheatingFound)
+				#end
+					addWeek(['Cheating'], 3, ['bambi3d']);
+					addWeek(['Cheating B-Side'], 3, ['bambi3d']);
+				#if !debug
+				if (FlxG.save.data.unfairnessFound)
+				#end
+					addWeek(['Unfairness'], 5, ['bambi3dUnfair']);
+					addWeek(['Exploitation'], 5, ['expunged']);
+			case 'extrasandfanmades':
+				addWeek(['Furiosity'], 2, ['dave3d']);
+				addWeek(['Mealie'], 3, ['bambi']);
+				addWeek(['8-28-63'], 1, ['splitathon']);
+				addWeek(['Disruption'], 3, ['bambiPISSED']);
+				addWeek(['Bambi-Bass'], 3, ['bambiPISSED']);
+				addWeek(['Sucked'], 3, ['bamberfunny']);
+				//addWeek(['Monochrome'], 5, ['bambi3d']);
+				//addWeek(['Defeat'], 5, ['bambiRage']);
+		    case 'mods':
+				for (i in 0...WeekData.weeksList.length) {
+					if(weekIsLocked(WeekData.weeksList[i])) continue;
+		
+					var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+					var leSongs:Array<String> = [];
+					var leChars:Array<String> = [];
+		
+					for (j in 0...leWeek.songs.length)
+					{
+						leSongs.push(leWeek.songs[j][0]);
+						leChars.push(leWeek.songs[j][1]);
+					}
+		
+					WeekData.setDirectoryFromWeek(leWeek);
+					for (song in leWeek.songs)
+					{
+						var colors:Array<Int> = song[2];
+						if(colors == null || colors.length < 3)
+						{
+							colors = [146, 113, 253];
+						}
+						addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+					}
+				}
+				WeekData.loadTheFirstEnabledMod();
+				bg.color = 0xFF4965FF;
+				//isInMods = true;
+		}
+	}
+
+	public function GoToActualFreeplay()
+	{
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 		grpIcons = new FlxTypedGroup<HealthIcon>();
@@ -253,8 +328,6 @@ class FreeplayState extends MusicBeatState
 		changeDiff();
 
 		FlxG.mouse.visible = true;
-
-		super.create();
 	}
 
 	function checkForSongsThatMatch(?start:String = '')
