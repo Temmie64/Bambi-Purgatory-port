@@ -76,8 +76,6 @@ class FreeplayState extends MusicBeatState
 	private var isInMods:Bool = false;
 	private var CurrentSongIcon:FlxSprite;
 
-	private var CurrentSongIcon:FlxSprite;
-
 	private var AllPossibleSongs:Array<String> = ["dave", "old", "extrasandfanmades", "joke", "mods"];
 
 	private var CurrentPack:Int = 0;
@@ -555,7 +553,7 @@ class FreeplayState extends MusicBeatState
 			if (controls.BACK)
 			{
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new MainMenuState());
+				FlxG.switchState(MainMenuState.new);
 			}
 			
 			return;
@@ -691,7 +689,7 @@ class FreeplayState extends MusicBeatState
 				allowinputShit = false;
 				fart = false;
 			}
-			else if(space)
+			else if(space && instPlaying != curSelected)
 			{
 				requiredRamLoad = 0;
 				noteCount = 0;
@@ -831,7 +829,7 @@ class FreeplayState extends MusicBeatState
 				}
 			}
 
-			else if (accepted && !player.playingMusic)
+			else if (accepted && !player.playingMusic && allowinputShit)
 			{
 				persistentUpdate = false;
 				var songLowercase:String = Paths.formatToSongPath(songs[curSelected].songName);
