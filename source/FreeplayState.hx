@@ -422,7 +422,7 @@ class FreeplayState extends MusicBeatState
 		super.closeSubState();
 	}
 
-	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
+	public function addWeek(songName:String, weekNum:Int, songCharacter:String, color:Int)
 	{
 		if (songCharacters == null)
 			songCharacters = ['bf'];
@@ -437,14 +437,9 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 
-	/*public function addSong(songName:String, weekNum:Int, songCharacter:String, color:Int)
+	public function addSong(songName:String, weekNum:Int, songCharacter:String, color:Int)
 	{
 		songs.push(new SongMetadata(songName, weekNum, songCharacter, color));
-	}*/
-
-	public function addSong(songName:String, weekNum:Int, songCharacter:String)
-	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter));
 	}
 
 	function weekIsLocked(name:String):Bool {
@@ -1145,15 +1140,15 @@ class SongMetadata
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
-	//public var color:Int = -7179779;
+	public var color:Int = -7179779;
 	public var folder:String = "";
 
-	public function new(song:String, week:Int, songCharacter:String)
+	public function new(song:String, week:Int, songCharacter:String, color:Int)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
-		//this.color = color;
+		this.color = color;
 		this.folder = Paths.currentModDirectory;
 		if(this.folder == null) this.folder = '';
 	}
