@@ -297,8 +297,10 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 
-	var instPlaying:Int = -1;
-	private static var vocals:FlxSound = null;
+	public static var instPlaying:Int = -1;
+	public static var vocals:FlxSound = null;
+	public static var opponentVocals:FlxSound = null;
+	var holdTime:Float = 0;
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
