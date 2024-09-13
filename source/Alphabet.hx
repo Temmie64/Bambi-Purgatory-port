@@ -26,12 +26,18 @@ class Alphabet extends FlxSpriteGroup
 	public var bold:Bool = false;
 	public var letters:Array<AlphaCharacter> = [];
 
+	public var delay:Float = 0.05;
+	public var paused:Bool = false;
 	public var isMenuItem:Bool = false;
 	public var itemType:String = "";
 	public var isPauseItem:Bool = false;
 	public var targetY:Int = 0;
 	public var changeX:Bool = true;
 	public var changeY:Bool = true;
+	public var targetY:Float = 0;
+	public var targetX:Float = 0;
+	public var xAdd:Float = 0;
+	public var yAdd:Float = 0;
 
 	public var alignment(default, set):Alignment = LEFT;
 	public var scaleX(default, set):Float = 1;
@@ -461,6 +467,7 @@ class AlphaCharacter extends FlxSprite
 		updateLetterOffset();
 	}
 
+	public var curLetter:Letter = null;
 	public function setupAlphaCharacter(x:Float, y:Float, ?character:String = null, ?bold:Null<Bool> = null)
 	{
 		this.x = x;
