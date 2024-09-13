@@ -13,7 +13,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.math.FlxMath;
 import flixel.util.FlxStringUtil;
-import purgatory.PurFreeplayState;
+//import purgatory.PurFreeplayState;
 
 class CharacterSelectionState extends MusicBeatState //This is not from the D&B source code, it's completely made by me (Delta).
 {
