@@ -11,10 +11,11 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.math.FlxMath;
 import flixel.util.FlxStringUtil;
+import Character.Boyfriend;
 
 class CharacterSelectState extends MusicBeatState
 {
-	var physicalChars:Array<Boyfriend>;
+	var physicalChars:Array<Character.Boyfriend>;
 
 	public var isDebug:Bool = false;
 		
