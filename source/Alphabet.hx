@@ -137,6 +137,7 @@ class Alphabet extends FlxSpriteGroup
 	{
 		if (value == scaleX) return value;
 
+		var ratio:Float = value / scale.x;
 		scale.x = value;
 		for (letter in letters)
 		{
@@ -149,6 +150,7 @@ class Alphabet extends FlxSpriteGroup
 			}
 		}
 		scaleX = value;
+		softReloadLetters(ratio, 1);
 		return value;
 	}
 
