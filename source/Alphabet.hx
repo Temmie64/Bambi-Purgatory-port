@@ -186,7 +186,7 @@ class Alphabet extends FlxSpriteGroup
 	override function update(elapsed:Float)
 	{
 		var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
-		
+
 		if (isMenuItem)
 		{
 			var lerpVal:Float = CoolUtil.boundTo(elapsed * 9.6, 0, 1);
@@ -384,7 +384,7 @@ class AlphaCharacter extends FlxSprite
 		'\\' => {anim: 'back slash', offsets: [0, 0]},
 		'/'  => {anim: 'forward slash', offsets: [0, 0]},
 		'|'  => null,
-		'~'  => {offsets: [0, 16]}
+		'~'  => {offsets: [0, 16]},
 
 		//additional symbols
 		'¡'  => {anim: 'inverted exclamation', offsets: [0, -20], offsetsBold: [0, -20]},
