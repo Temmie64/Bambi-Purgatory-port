@@ -26,7 +26,6 @@ class Alphabet extends FlxSpriteGroup
 	public var bold:Bool = false;
 	public var letters:Array<AlphaCharacter> = [];
 
-	public var delay:Float = 0.05;
 	public var paused:Bool = false;
 	public var isMenuItem:Bool = false;
 	public var itemType:String = "";

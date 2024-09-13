@@ -15,7 +15,7 @@ class AttachedText extends Alphabet
 
 		this.scaleX = scale;
 		this.scaleY = scale;
-		//this.isMenuItem = false;
+		this.isMenuItem = false;
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
 	}
