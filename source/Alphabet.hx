@@ -28,6 +28,7 @@ class Alphabet extends FlxSpriteGroup
 
 	public var isMenuItem:Bool = false;
 	public var itemType:String = "";
+	public var isPauseItem:Bool = false;
 	public var targetY:Int = 0;
 	public var changeX:Bool = true;
 	public var changeY:Bool = true;
@@ -182,27 +183,10 @@ class Alphabet extends FlxSpriteGroup
 		}
 	}
 
-	private function set_scaleY(value:Float)
-	{
-		if (value == scaleY) return value;
-
-		scale.y = value;
-		for (letter in letters)
-		{
-			if(letter != null)
-			{
-				letter.updateHitbox();
-				letter.updateLetterOffset();
-				var ratio:Float = (value / letter.spawnScale.y);
-				letter.y = letter.spawnPos.y * ratio;
-			}
-		}
-		scaleY = value;
-		return value;
-	}
-
 	override function update(elapsed:Float)
 	{
+		var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
+		
 		if (isMenuItem)
 		{
 			var lerpVal:Float = CoolUtil.boundTo(elapsed * 9.6, 0, 1);
@@ -253,7 +237,7 @@ class Alphabet extends FlxSpriteGroup
 				if (x < -900)
 					x = -900;
 		}
-		
+
 		super.update(elapsed);
 	}
 
@@ -401,6 +385,13 @@ class AlphaCharacter extends FlxSprite
 		'/'  => {anim: 'forward slash', offsets: [0, 0]},
 		'|'  => null,
 		'~'  => {offsets: [0, 16]}
+
+		//additional symbols
+		'¡'  => {anim: 'inverted exclamation', offsets: [0, -20], offsetsBold: [0, -20]},
+		'¿'  => {anim: 'inverted question', offsets: [0, -20], offsetsBold: [0, -20]},
+		'{'  => null,
+		'}'  => null,
+		'•'  => {anim: 'bullet', offsets: [0, 18], offsetsBold: [0, 20]}
 	];
 
 	var parent:Alphabet;
@@ -411,6 +402,7 @@ class AlphaCharacter extends FlxSprite
 
 	public var row:Int = 0;
 	public var rowWidth:Float = 0;
+	public var character:String = '?';
 	public function new(x:Float, y:Float, character:String, bold:Bool, parent:Alphabet)
 	{
 		super(x, y);
@@ -469,10 +461,66 @@ class AlphaCharacter extends FlxSprite
 		updateLetterOffset();
 	}
 
+	public function setupAlphaCharacter(x:Float, y:Float, ?character:String = null, ?bold:Null<Bool> = null)
+	{
+		this.x = x;
+		this.y = y;
+	
+		if(parent != null)
+		{
+			if(bold == null)
+				bold = parent.bold;
+			this.scale.x = parent.scaleX;
+			this.scale.y = parent.scaleY;
+		}
+			
+		if(character != null)
+		{
+			this.character = character;
+			curLetter = null;
+			var lowercase:String = this.character.toLowerCase();
+			if(allLetters.exists(lowercase)) curLetter = allLetters.get(lowercase);
+			else curLetter = allLetters.get('?');
+	
+			var suffix:String = '';
+			if(!bold)
+			{
+				if(isTypeAlphabet(lowercase))
+				{
+					if(lowercase != this.character)
+						suffix = ' uppercase';
+					else
+						suffix = ' lowercase';
+				}
+				else suffix = ' normal';
+			}
+			else suffix = ' bold';
+	
+			var alphaAnim:String = lowercase;
+			if(curLetter != null && curLetter.anim != null) alphaAnim = curLetter.anim;
+	
+			var anim:String = alphaAnim + suffix;
+			animation.addByPrefix(anim, anim, 24);
+			animation.play(anim, true);
+			if(animation.curAnim == null)
+			{
+				if(suffix != ' bold') suffix = ' normal';
+				anim = 'question' + suffix;
+				animation.addByPrefix(anim, anim, 24);
+				animation.play(anim, true);
+			}
+		}
+		updateHitbox();
+	}
+
 	public static function isTypeAlphabet(c:String) // thanks kade
 	{
 		var ascii = StringTools.fastCodeAt(c, 0);
-		return (ascii >= 65 && ascii <= 90) || (ascii >= 97 && ascii <= 122);
+		return (ascii >= 65 && ascii <= 90)
+			|| (ascii >= 97 && ascii <= 122)
+			|| (ascii >= 192 && ascii <= 214)
+			|| (ascii >= 216 && ascii <= 246)
+			|| (ascii >= 248 && ascii <= 255);
 	}
 
 	private function set_image(name:String)
