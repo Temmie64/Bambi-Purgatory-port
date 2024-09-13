@@ -31,7 +31,6 @@ class Alphabet extends FlxSpriteGroup
 	public var isMenuItem:Bool = false;
 	public var itemType:String = "";
 	public var isPauseItem:Bool = false;
-	public var targetY:Int = 0;
 	public var changeX:Bool = true;
 	public var changeY:Bool = true;
 	public var targetY:Float = 0;
