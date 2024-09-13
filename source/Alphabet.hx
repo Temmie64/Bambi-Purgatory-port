@@ -118,6 +118,21 @@ class Alphabet extends FlxSpriteGroup
 		rows = 0;
 	}
 
+	public function setScale(newX:Float, newY:Null<Float> = null)
+	{
+		var lastX:Float = scale.x;
+		var lastY:Float = scale.y;
+		if(newY == null) newY = newX;
+		@:bypassAccessor
+			scaleX = newX;
+		@:bypassAccessor
+			scaleY = newY;
+	
+		scale.x = newX;
+		scale.y = newY;
+		softReloadLetters(newX / lastX, newY / lastY);
+	}
+
 	private function set_scaleX(value:Float)
 	{
 		if (value == scaleX) return value;

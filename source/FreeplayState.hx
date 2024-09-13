@@ -15,9 +15,6 @@ import flixel.system.FlxSound;
 import flixel.util.FlxStringUtil;
 import openfl.utils.Assets as OpenFlAssets;
 import lime.utils.Assets;
-#if desktop
-import Discord.DiscordClient;
-#end
 using StringTools;
 
 class FreeplayState extends MusicBeatState
@@ -335,7 +332,7 @@ class FreeplayState extends MusicBeatState
 			if (controls.BACK)
 			{
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new MainMenuState());
+				FlxG.switchState(new MainMenuState());
 			}
 		
 			return;
@@ -378,7 +375,7 @@ class FreeplayState extends MusicBeatState
 		if (controls.BACK && allowinputShit)
 			{
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new FreeplayState());
+				FlxG.switchState(new FreeplayState());
 	
 			if (accepted && allowinputShit)
 			{

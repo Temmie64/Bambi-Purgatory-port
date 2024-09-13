@@ -465,7 +465,7 @@ class CharacterSelectionState extends MusicBeatState //This is not from the D&B 
 					}
                     if(PlayState.isFreeplayPur) {
                         FlxG.sound.play(Paths.sound('cancelMenu'));
-						FlxG.switchState(new PurFreeplayState());
+						//FlxG.switchState(new PurFreeplayState());
 						FlxG.sound.playMusic(Paths.music('purFreakyMenu'));
                         PauseSubState.isPlayState = false;
 					} // is the bp menu still gonna be used or not?
