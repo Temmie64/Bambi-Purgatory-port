@@ -55,7 +55,6 @@ class FreeplayState extends MusicBeatState
 	private var grpIcons:FlxTypedGroup<HealthIcon>;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var iconArray:Array<HealthIcon> = [];
-	private var curPlaying:Bool = false;
 	private var curChar:String = "unknown";
 	public static var curPlaying:Bool = false;
 	var lerpSelected:Float = 0;
@@ -127,7 +126,7 @@ class FreeplayState extends MusicBeatState
 		bg.color = 0xFF4965FF;
 		add(bg);
 
-		CurrentSongIcon = new FlxSprite(0,0).loadGraphic(Paths.image('packs/' + (Catagories[i].toLowerCase()), "preload"));
+		CurrentSongIcon = new FlxSprite(0,0).loadGraphic(Paths.image('packs/' + (AllPossibleSongs[CurrentPack].toLowerCase()), "preload"));
 
 		CurrentSongIcon.centerOffsets(false);
 		CurrentSongIcon.x = (FlxG.width / 2) - 256;
